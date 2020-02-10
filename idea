@@ -1,20 +1,2 @@
 game in style of "balls" / vertical pong
 space invader
-
-
-~~ Pong / Ball Game desc ~~ 
-
-Start at centeralised point on the board.
-Choose angle w/ arrow keys (L and R)
-Then enter or space to fire a ball.
-Aim of the game is to get rid of the blocks above. Each block has a health.
-
-The health of the block will decrease by 1 when hit and if 0 will dissapear. 
-Block will move downwards after the round ends
-New blocks get spawned after every round (ball gets fired and then bounces back)
-The new blocks spawnned will have an increase health by 1
-Next round you can fire 1 more ball.
-Next round starting position is the position of which the ball returns to "base" of prev round
-Game ends when the blocks get down to "base"
-
-~~ End ~~ 
