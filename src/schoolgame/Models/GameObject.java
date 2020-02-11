@@ -20,13 +20,14 @@ import java.util.List;
  * @author 14NBill
  */
 public class GameObject implements IRenderable {
-    public int X,Y,Z;
+
+    public int X, Y, Z;
 
     public Image sprite;
 
     public String name;
 
-    final List<MotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
+    final List<IMotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
 
     public Boolean collidable;
 
@@ -49,14 +50,16 @@ public class GameObject implements IRenderable {
     }
 
     public void Destroy() {
-        synchronized (GameEngine.singleton.activeObjects) {
+        synchronized (pendingVectors) {
             this.components.forEach(goc -> goc.Destroy(this));
             this.components.clear();
+        }
+        synchronized (GameEngine.singleton.activeObjects) {
             GameEngine.singleton.activeObjects.remove(this);
         }
     }
 
-    public void AddMotion(MotionComponent motionComponent) {
+    public void AddMotion(IMotionComponent motionComponent) {
         synchronized (pendingVectors) {
             pendingVectors.add(motionComponent);
         }
@@ -71,22 +74,44 @@ public class GameObject implements IRenderable {
 
     @Override
     public void DoRender(Graphics g) {
-        ArrayList<MotionComponent> toDelete = new ArrayList<>();
+        ArrayList<IMotionComponent> toDelete = new ArrayList<>();
         synchronized (pendingVectors) {
-            for (MotionComponent mc : pendingVectors) {
-                if (mc.frames <= 0) {
-                    toDelete.add(mc);
-                    continue;
+            for (IMotionComponent imc : pendingVectors) {
+                if (imc instanceof MotionComponent) {
+                    MotionComponent mc = (MotionComponent)imc;
+                    if (mc.frames <= 0) {
+                        toDelete.add(mc);
+                        continue;
+                    }
+                    this.X += mc.x;
+                    this.Y += mc.y;
+                    mc.frames--;
+                } else if (imc instanceof DoubleMotionComponent) {
+                    DoubleMotionComponent mc = (DoubleMotionComponent)imc;
+                    if (mc.frames <= 0) {
+                        toDelete.add(mc);
+                        continue;
+                    }
+                    if (mc.xInterpolation >= Math.ceil(mc.x)) {
+                        mc.xInterpolation = 0;
+                        this.X += Math.ceil(mc.x);
+                    } else {
+                        mc.xInterpolation += mc.x;
+                    }
+                    if (mc.yInterpolation >= Math.ceil(mc.y)) {
+                        mc.yInterpolation = 0;
+                        this.Y += Math.ceil(mc.y);
+                    } else {
+                        mc.yInterpolation += mc.y;
+                    }
+                    mc.frames--;
                 }
-                this.X += mc.x;
-                this.Y += mc.y;
-                mc.frames--;
             }
             pendingVectors.removeAll(toDelete);
         }
         AffineTransform at = AffineTransform.getTranslateInstance(X, Y);
         at.rotate(Math.toRadians(rotation));
-        ((Graphics2D)g).drawImage(sprite, at, null);
+        ((Graphics2D) g).drawImage(sprite, at, null);
         synchronized (components) {
             components.forEach(goc -> goc.Update(this));
             if (collidable && components.size() > 0) {

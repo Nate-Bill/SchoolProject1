@@ -1,8 +1,6 @@
 package schoolgame.Models;
 
-import java.util.Vector;
-
-public class MotionComponent {
+public class MotionComponent implements IMotionComponent {
     public int x;
     public int y;
     public int frames;
