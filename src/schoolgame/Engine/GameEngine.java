@@ -34,16 +34,16 @@ public class GameEngine implements KeyListener {
         singleton = this;
         JFrame jframe = new JFrame();
         renderer = new RenderEngine();
-	    jframe.add(renderer);
-	    jframe.setTitle("Bricks VS Block");
-	    jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    jframe.setSize(800, 800);
-	    jframe.addKeyListener(this);
-	    jframe.setResizable(false);
-	    jframe.setVisible(true);
-	    new Thread(() -> {
-	        while (!GameEngine.singleton.cancellationToken) {
-	            try {
+        jframe.add(renderer);
+        jframe.setTitle("Bricks VS Block");
+        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jframe.setSize(800, 800);
+        jframe.addKeyListener(this);
+        jframe.setResizable(false);
+        jframe.setVisible(true);
+        new Thread(() -> {
+            while (!GameEngine.singleton.cancellationToken) {
+                try {
                     GameEngine.singleton.renderer.repaint();
                     Thread.sleep(10);
                 } catch (Exception ignored) {
@@ -55,11 +55,16 @@ public class GameEngine implements KeyListener {
 
     public void DoRender(Graphics g) {
         synchronized (activeObjects) {
-            if (activeObjects.size() == 0) return;
+            if (activeObjects.size() == 0) {
+                return;
+            }
             activeObjects.sort(Comparator.comparingInt(IRenderable::GetZ));
-            if (activeObjects.get(0).GetZ() > activeObjects.get(activeObjects.size() - 1).GetZ())
+            if (activeObjects.get(0).GetZ() > activeObjects.get(activeObjects.size() - 1).GetZ()) {
                 Collections.reverse(activeObjects);
-            for (IRenderable renderable : activeObjects) renderable.DoRender(g);
+            }
+            for (IRenderable renderable : activeObjects) {
+                renderable.DoRender(g);
+            }
         }
     }
 
