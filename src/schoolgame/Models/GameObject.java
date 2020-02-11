@@ -27,7 +27,7 @@ public class GameObject implements IRenderable {
 
     public String name;
 
-    final List<IMotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
+    public final List<IMotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
 
     public Boolean collidable;
 
@@ -109,9 +109,6 @@ public class GameObject implements IRenderable {
             }
             pendingVectors.removeAll(toDelete);
         }
-        AffineTransform at = AffineTransform.getTranslateInstance(X, Y);
-        at.rotate(Math.toRadians(rotation));
-        ((Graphics2D) g).drawImage(sprite, at, null);
         synchronized (components) {
             components.forEach(goc -> goc.Update(this));
             if (collidable && components.size() > 0) {
@@ -137,6 +134,9 @@ public class GameObject implements IRenderable {
                 }
             }
         }
+        AffineTransform at = AffineTransform.getTranslateInstance(X, Y);
+        at.rotate(Math.toRadians(rotation));
+        ((Graphics2D) g).drawImage(sprite, at, null);
     }
 
     @Override
