@@ -6,6 +6,7 @@
 package schoolgame;
 
 import schoolgame.Engine.GameEngine;
+import schoolgame.Models.DoubleMotionComponent;
 import schoolgame.Models.GameObject;
 import schoolgame.Models.MotionComponent;
 
@@ -22,7 +23,7 @@ public class SchoolGame {
         new GameEngine();
         new GameObject("bg", 0, 0, 0, "/schoolgame/resources/background.png", false);
         GameObject go = new GameObject("debug",0, 0, 1, "/schoolgame/resources/debug.png", true);
-        go.AddMotion(new MotionComponent(3, 3, 300));
+        go.AddMotion(new DoubleMotionComponent(0.5, 0.5, 300));
     }
     
 }
