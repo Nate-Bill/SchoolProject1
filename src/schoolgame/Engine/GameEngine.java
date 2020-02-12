@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.JFrame;
+import schoolgame.Models.GameObject;
+import schoolgame.Models.IGameObjectComponent;
 
 /**
  *
@@ -67,15 +69,21 @@ public class GameEngine implements KeyListener {
             }
         }
     }
+    /*
+    public static GameObject[] GetGameObjectByComponent(String name, IGameObjectComponent component) {
+        synchronized (singleton.activeObjects) {
+            return (GameObject[]) singleton.activeObjects.stream().filter(go -> go instanceof GameObject).filter(go -> ((GameObject)go).components.stream().anyMatch(c -> c instanceof component.class)).toArray();
+        }
+    } //TODO these helper
+    */
 
     @Override
     public void keyTyped(KeyEvent ke) {
-
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
-
+        //TODO forward this to components
     }
 
     @Override

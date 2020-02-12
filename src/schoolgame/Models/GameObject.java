@@ -5,6 +5,7 @@
  */
 package schoolgame.Models;
 
+import com.sun.org.apache.xml.internal.security.utils.ElementProxy;
 import schoolgame.Engine.GameEngine;
 
 import javax.swing.*;
@@ -92,13 +93,13 @@ public class GameObject implements IRenderable {
                         toDelete.add(mc);
                         continue;
                     }
-                    if (mc.xInterpolation >= Math.ceil(mc.x)) {
+                    if (mc.xInterpolation + Math.floor(mc.x) >= Math.ceil(mc.x)) {
                         mc.xInterpolation = 0;
                         this.X += Math.ceil(mc.x);
                     } else {
                         mc.xInterpolation += mc.x;
                     }
-                    if (mc.yInterpolation >= Math.ceil(mc.y)) {
+                    if (mc.yInterpolation  + Math.floor(mc.y) >= Math.ceil(mc.y)) {
                         mc.yInterpolation = 0;
                         this.Y += Math.ceil(mc.y);
                     } else {
@@ -112,11 +113,11 @@ public class GameObject implements IRenderable {
         synchronized (components) {
             components.forEach(goc -> goc.Update(this));
             if (collidable && components.size() > 0) {
-                if (X > 800) {
+                if (X + sprite.getWidth(null) > 800) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLRIGHT));
                 } else if (X < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLLEFT));
-                } else if (Y < 0) {
+                } else if (Y - sprite.getHeight(null) < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLTOP));
                 } else if (Y > 800) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLBOTTOM));
@@ -125,8 +126,9 @@ public class GameObject implements IRenderable {
                     if (ir instanceof GameObject) {
                         GameObject go = (GameObject) ir;
                         if (go.collidable) {
-                            if (X > go.X && X + sprite.getWidth(null) < go.X + go.sprite.getWidth(null)
-                                    && Y > go.Y && Y + sprite.getHeight(null) < go.Y + go.sprite.getHeight(null)) {
+                            Rectangle myBox = new Rectangle(X, Y, sprite.getWidth(null), sprite.getHeight(null));
+                            Rectangle goBox = new Rectangle(go.X, go.Y, go.sprite.getWidth(null), go.sprite.getHeight(null));
+                            if (myBox.intersects(goBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECT));
                             }
                         }
@@ -134,8 +136,8 @@ public class GameObject implements IRenderable {
                 }
             }
         }
-        AffineTransform at = AffineTransform.getTranslateInstance(X, Y);
-        at.rotate(Math.toRadians(rotation));
+        AffineTransform at = AffineTransform.getTranslateInstance(X - (sprite.getWidth(null) / 2), Y  - (sprite.getHeight(null) / 2));
+        at.rotate(Math.toRadians(rotation), X + (sprite.getWidth(null) / 2), Y + (sprite.getHeight(null) / 2));
         ((Graphics2D) g).drawImage(sprite, at, null);
     }
 

@@ -22,9 +22,13 @@ public class SchoolGame {
      */
     public static void main(String[] args) throws InterruptedException {
         new GameEngine();
-        new GameObject("bg", 0, 0, 0, "/schoolgame/resources/background.png", false);
-        GameObject go = new GameObject("debug",0, 0, 1, "/schoolgame/resources/debug.png", true, new DemoComponent());
-        go.AddMotion(new MotionComponent(20, 20, 300));
+        new GameObject("bg", 400, 400, 0, "/schoolgame/resources/background.png", false);
+        GameObject go = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/debug.png", true);
+        for (int i = 0; i <= 360; i++) {
+            go.rotation = i;
+            Thread.sleep(100);
+        }
+        //go.AddMotion(new MotionComponent(20, 20, 300));
     }
     
 }
