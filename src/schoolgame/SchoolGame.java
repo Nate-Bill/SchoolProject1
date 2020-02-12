@@ -6,6 +6,7 @@
 package schoolgame;
 
 import schoolgame.Engine.GameEngine;
+import schoolgame.Game.DemoComponent;
 import schoolgame.Models.DoubleMotionComponent;
 import schoolgame.Models.GameObject;
 import schoolgame.Models.MotionComponent;
@@ -22,8 +23,8 @@ public class SchoolGame {
     public static void main(String[] args) throws InterruptedException {
         new GameEngine();
         new GameObject("bg", 0, 0, 0, "/schoolgame/resources/background.png", false);
-        GameObject go = new GameObject("debug",0, 0, 1, "/schoolgame/resources/debug.png", true);
-        go.AddMotion(new DoubleMotionComponent(0.5, 0.5, 300));
+        GameObject go = new GameObject("debug",0, 0, 1, "/schoolgame/resources/debug.png", true, new DemoComponent());
+        go.AddMotion(new MotionComponent(20, 20, 300));
     }
     
 }
