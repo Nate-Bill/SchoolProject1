@@ -17,6 +17,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import schoolgame.Models.GameObject;
 import schoolgame.Models.IGameObjectComponent;
+import schoolgame.Models.IKeyCallback;
 
 /**
  *
@@ -77,17 +78,38 @@ public class GameEngine implements KeyListener {
     } //TODO these helper
     */
 
+    ArrayList<IKeyCallback> keys = new ArrayList<>();
+    
+    public void RegisterKeyListener(IKeyCallback kl) {
+        synchronized (keys) {
+            keys.add(kl);
+        }
+    }
+    
+    public void UnregisterKeyListener(IKeyCallback kl) {
+        synchronized (keys) {
+            keys.remove(kl);
+        }
+    }
+    
     @Override
     public void keyTyped(KeyEvent ke) {
+        synchronized (keys) {
+            for (IKeyCallback r : keys) r.KeyType(ke);
+        }
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        //TODO forward this to components
+        synchronized (keys) {
+            for (IKeyCallback r : keys) r.KeyPress(ke);
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
-
+        synchronized (keys) {
+            for (IKeyCallback r : keys) r.KeyRelease(ke);
+        }
     }
 }
