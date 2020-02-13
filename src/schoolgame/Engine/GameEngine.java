@@ -15,6 +15,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.JFrame;
+import schoolgame.Models.GameObject;
+import schoolgame.Models.IGameObjectComponent;
+import schoolgame.Models.IKeyCallback;
 
 /**
  *
@@ -67,19 +70,46 @@ public class GameEngine implements KeyListener {
             }
         }
     }
+    /*
+    public static GameObject[] GetGameObjectByComponent(String name, IGameObjectComponent component) {
+        synchronized (singleton.activeObjects) {
+            return (GameObject[]) singleton.activeObjects.stream().filter(go -> go instanceof GameObject).filter(go -> ((GameObject)go).components.stream().anyMatch(c -> c instanceof component.class)).toArray();
+        }
+    } //TODO these helper
+    */
 
+    ArrayList<IKeyCallback> keys = new ArrayList<>();
+    
+    public void RegisterKeyListener(IKeyCallback kl) {
+        synchronized (keys) {
+            keys.add(kl);
+        }
+    }
+    
+    public void UnregisterKeyListener(IKeyCallback kl) {
+        synchronized (keys) {
+            keys.remove(kl);
+        }
+    }
+    
     @Override
     public void keyTyped(KeyEvent ke) {
-
+        synchronized (keys) {
+            for (IKeyCallback r : keys) r.KeyType(ke);
+        }
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
-
+        synchronized (keys) {
+            for (IKeyCallback r : keys) r.KeyPress(ke);
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
-
+        synchronized (keys) {
+            for (IKeyCallback r : keys) r.KeyRelease(ke);
+        }
     }
 }

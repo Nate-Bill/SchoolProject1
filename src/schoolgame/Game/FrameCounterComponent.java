@@ -13,11 +13,11 @@ import schoolgame.Models.IGameObjectComponent;
  *
  * @author 14NBill
  */
-public class DemoComponent implements IGameObjectComponent {
+public class FrameCounterComponent implements IGameObjectComponent {
 
+    
     @Override
     public void Update(GameObject gameObject) {
-        
     }
 
     @Override
@@ -27,17 +27,17 @@ public class DemoComponent implements IGameObjectComponent {
 
     @Override
     public void Destroy(GameObject gameObject) {
-        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void WallCollideEvent(GameObject gameObject, CollisionEventType type) {
-        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void GameObjectCollideEvent(GameObject gameObject, GameObject gameObjectCollidedWith, CollisionEventType type) {
-        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-  
+    
 }

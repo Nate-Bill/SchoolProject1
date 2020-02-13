@@ -21,13 +21,15 @@ import java.util.List;
  */
 public class GameObject implements IRenderable {
 
-    public int X, Y, Z;
+    public double X, Y;
+    
+    public int Z;
 
     public Image sprite;
 
     public String name;
 
-    public final List<IMotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
+    public final List<MotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
 
     public Boolean collidable;
 
@@ -59,7 +61,7 @@ public class GameObject implements IRenderable {
         }
     }
 
-    public void AddMotion(IMotionComponent motionComponent) {
+    public void AddMotion(MotionComponent motionComponent) {
         synchronized (pendingVectors) {
             pendingVectors.add(motionComponent);
         }
@@ -74,59 +76,38 @@ public class GameObject implements IRenderable {
 
     @Override
     public void DoRender(Graphics g) {
-        ArrayList<IMotionComponent> toDelete = new ArrayList<>();
+        ArrayList<MotionComponent> toDelete = new ArrayList<>();
         synchronized (pendingVectors) {
-            for (IMotionComponent imc : pendingVectors) {
-                if (imc instanceof MotionComponent) {
-                    MotionComponent mc = (MotionComponent)imc;
-                    if (mc.frames <= 0) {
-                        toDelete.add(mc);
-                        continue;
-                    }
-                    this.X += mc.x;
-                    this.Y += mc.y;
-                    mc.frames--;
-                } else if (imc instanceof DoubleMotionComponent) {
-                    DoubleMotionComponent mc = (DoubleMotionComponent)imc;
-                    if (mc.frames <= 0) {
-                        toDelete.add(mc);
-                        continue;
-                    }
-                    if (mc.xInterpolation >= Math.ceil(mc.x)) {
-                        mc.xInterpolation = 0;
-                        this.X += Math.ceil(mc.x);
-                    } else {
-                        mc.xInterpolation += mc.x;
-                    }
-                    if (mc.yInterpolation >= Math.ceil(mc.y)) {
-                        mc.yInterpolation = 0;
-                        this.Y += Math.ceil(mc.y);
-                    } else {
-                        mc.yInterpolation += mc.y;
-                    }
-                    mc.frames--;
+            for (MotionComponent mc : pendingVectors) {
+                if (mc.frames <= 0) {
+                    toDelete.add(mc);
+                    continue;
                 }
+                this.X += mc.x;
+                this.Y += mc.y;
+                mc.frames--;
             }
             pendingVectors.removeAll(toDelete);
         }
         synchronized (components) {
             components.forEach(goc -> goc.Update(this));
             if (collidable && components.size() > 0) {
-                if (X > 800) {
+                if (X + sprite.getWidth(null) > 800) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLRIGHT));
                 } else if (X < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLLEFT));
                 } else if (Y < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLTOP));
-                } else if (Y > 800) {
+                } else if (Y + sprite.getHeight(null)> 700) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLBOTTOM));
                 }
                 for (IRenderable ir : GameEngine.singleton.activeObjects) {
                     if (ir instanceof GameObject) {
                         GameObject go = (GameObject) ir;
                         if (go.collidable) {
-                            if (X > go.X && X + sprite.getWidth(null) < go.X + go.sprite.getWidth(null)
-                                    && Y > go.Y && Y + sprite.getHeight(null) < go.Y + go.sprite.getHeight(null)) {
+                            Rectangle myBox = new Rectangle((int)Math.round(X), (int)Math.round(Y), sprite.getWidth(null), sprite.getHeight(null));
+                            Rectangle goBox = new Rectangle((int)Math.round(go.X), (int)Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null));
+                            if (myBox.intersects(goBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECT));
                             }
                         }
@@ -135,7 +116,7 @@ public class GameObject implements IRenderable {
             }
         }
         AffineTransform at = AffineTransform.getTranslateInstance(X, Y);
-        at.rotate(Math.toRadians(rotation));
+        at.rotate(Math.toRadians(rotation), sprite.getWidth(null) / 2, sprite.getHeight(null) / 2);
         ((Graphics2D) g).drawImage(sprite, at, null);
     }
 

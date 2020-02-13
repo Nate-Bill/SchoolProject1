@@ -1,11 +1,11 @@
 package schoolgame.Models;
 
-public class MotionComponent implements IMotionComponent {
-    public int x;
-    public int y;
+public class MotionComponent {
+    public double x;
+    public double y;
     public int frames;
 
-    public MotionComponent(int deltaX, int deltaY, int frameDuration) {
+    public MotionComponent(double deltaX, double deltaY, int frameDuration) {
         this.x = deltaX;
         this.y = deltaY;
         this.frames = frameDuration;
