@@ -7,7 +7,6 @@ package schoolgame;
 
 import schoolgame.Engine.GameEngine;
 import schoolgame.Game.DemoComponent;
-import schoolgame.Models.DoubleMotionComponent;
 import schoolgame.Models.GameObject;
 import schoolgame.Models.MotionComponent;
 

@@ -5,7 +5,6 @@
  */
 package schoolgame.Models;
 
-import com.sun.org.apache.xml.internal.security.utils.ElementProxy;
 import schoolgame.Engine.GameEngine;
 
 import javax.swing.*;
@@ -22,13 +21,15 @@ import java.util.List;
  */
 public class GameObject implements IRenderable {
 
-    public int X, Y, Z;
+    public double X, Y;
+    
+    public int Z;
 
     public Image sprite;
 
     public String name;
 
-    public final List<IMotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
+    public final List<MotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
 
     public Boolean collidable;
 
@@ -60,7 +61,7 @@ public class GameObject implements IRenderable {
         }
     }
 
-    public void AddMotion(IMotionComponent motionComponent) {
+    public void AddMotion(MotionComponent motionComponent) {
         synchronized (pendingVectors) {
             pendingVectors.add(motionComponent);
         }
@@ -75,38 +76,16 @@ public class GameObject implements IRenderable {
 
     @Override
     public void DoRender(Graphics g) {
-        ArrayList<IMotionComponent> toDelete = new ArrayList<>();
+        ArrayList<MotionComponent> toDelete = new ArrayList<>();
         synchronized (pendingVectors) {
-            for (IMotionComponent imc : pendingVectors) {
-                if (imc instanceof MotionComponent) {
-                    MotionComponent mc = (MotionComponent)imc;
-                    if (mc.frames <= 0) {
-                        toDelete.add(mc);
-                        continue;
-                    }
-                    this.X += mc.x;
-                    this.Y += mc.y;
-                    mc.frames--;
-                } else if (imc instanceof DoubleMotionComponent) {
-                    DoubleMotionComponent mc = (DoubleMotionComponent)imc;
-                    if (mc.frames <= 0) {
-                        toDelete.add(mc);
-                        continue;
-                    }
-                    if (mc.xInterpolation + Math.floor(mc.x) >= Math.ceil(mc.x)) {
-                        mc.xInterpolation = 0;
-                        this.X += Math.ceil(mc.x);
-                    } else {
-                        mc.xInterpolation += mc.x;
-                    }
-                    if (mc.yInterpolation  + Math.floor(mc.y) >= Math.ceil(mc.y)) {
-                        mc.yInterpolation = 0;
-                        this.Y += Math.ceil(mc.y);
-                    } else {
-                        mc.yInterpolation += mc.y;
-                    }
-                    mc.frames--;
+            for (MotionComponent mc : pendingVectors) {
+                if (mc.frames <= 0) {
+                    toDelete.add(mc);
+                    continue;
                 }
+                this.X += mc.x;
+                this.Y += mc.y;
+                mc.frames--;
             }
             pendingVectors.removeAll(toDelete);
         }
@@ -126,8 +105,8 @@ public class GameObject implements IRenderable {
                     if (ir instanceof GameObject) {
                         GameObject go = (GameObject) ir;
                         if (go.collidable) {
-                            Rectangle myBox = new Rectangle(X, Y, sprite.getWidth(null), sprite.getHeight(null));
-                            Rectangle goBox = new Rectangle(go.X, go.Y, go.sprite.getWidth(null), go.sprite.getHeight(null));
+                            Rectangle myBox = new Rectangle((int)Math.round(X), (int)Math.round(Y), sprite.getWidth(null), sprite.getHeight(null));
+                            Rectangle goBox = new Rectangle((int)Math.round(go.X), (int)Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null));
                             if (myBox.intersects(goBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECT));
                             }
