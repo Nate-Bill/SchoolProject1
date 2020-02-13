@@ -37,11 +37,12 @@ public class BallComponent implements IGameObjectComponent {
             MotionComponent dmc = (MotionComponent) gameObject.pendingVectors.stream().findFirst().get();
             double Xc = dmc.x;
             double Yc = dmc.y;
+            double Ycoor = gameObject.Y + gameObject.sprite.getHeight(null);
             System.out.println("Start x "+Xc);
             System.out.println("Start y " +Yc);
             gameObject.pendingVectors.clear();
             if(type==CollisionEventType.WALLRIGHT){
-                System.out.println("Right x "+Xc);
+            System.out.println("Right x "+Xc);
             System.out.println("Right y " +Yc);
                 gameObject.AddMotion(new MotionComponent(-Xc, Yc, 9999));
             }
@@ -58,6 +59,7 @@ public class BallComponent implements IGameObjectComponent {
             if(type==CollisionEventType.WALLBOTTOM){
                 System.out.println("Bottom x "+Xc);
                 System.out.println("Bottom y " +Yc);
+                System.out.println("Coor Y : "+Ycoor);
                 gameObject.AddMotion(new MotionComponent(Xc, -Yc, 999));
                 //FIND COORDS OF BALL AND SET BASE TO BE THERE
             }

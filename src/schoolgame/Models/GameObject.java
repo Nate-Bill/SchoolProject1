@@ -96,9 +96,9 @@ public class GameObject implements IRenderable {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLRIGHT));
                 } else if (X < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLLEFT));
-                } else if (Y - sprite.getHeight(null) < 0) {
+                } else if (Y < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLTOP));
-                } else if (Y > 800) {
+                } else if (Y + sprite.getHeight(null)> 700) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLBOTTOM));
                 }
                 for (IRenderable ir : GameEngine.singleton.activeObjects) {
