@@ -115,7 +115,7 @@ public class GameObject implements IRenderable {
                 }
             }
         }
-        AffineTransform at = AffineTransform.getTranslateInstance(X - (sprite.getWidth(null) / 2), Y  - (sprite.getHeight(null) / 2));
+        AffineTransform at = AffineTransform.getTranslateInstance(X, Y);
         at.rotate(Math.toRadians(rotation), X + (sprite.getWidth(null) / 2), Y + (sprite.getHeight(null) / 2));
         ((Graphics2D) g).drawImage(sprite, at, null);
     }
