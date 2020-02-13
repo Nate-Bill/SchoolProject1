@@ -6,6 +6,7 @@
 package schoolgame;
 
 import schoolgame.Engine.GameEngine;
+import schoolgame.Game.BallComponent;
 import schoolgame.Game.DemoComponent;
 import schoolgame.Models.GameObject;
 import schoolgame.Models.MotionComponent;
@@ -21,13 +22,13 @@ public class SchoolGame {
      */
     public static void main(String[] args) throws InterruptedException {
         new GameEngine();
-        new GameObject("bg", 400, 400, 0, "/schoolgame/resources/background.png", false);
-        GameObject go = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/debug.png", true);
+        new GameObject("bg", 0, 0, 0, "/schoolgame/resources/background.png", false);
+        GameObject go = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/debug.png", true, new BallComponent());
+        go.AddMotion(new MotionComponent(3, 3, 300));
         for (int i = 0; i <= 360; i++) {
             go.rotation = i;
-            Thread.sleep(100);
+            Thread.sleep(10);
         }
-        //go.AddMotion(new MotionComponent(20, 20, 300));
     }
     
 }
