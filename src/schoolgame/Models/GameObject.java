@@ -104,7 +104,7 @@ public class GameObject implements IRenderable {
                 for (IRenderable ir : GameEngine.singleton.activeObjects) {
                     if (ir instanceof GameObject) {
                         GameObject go = (GameObject) ir;
-                        if (go.collidable) {
+                        if (go.collidable && go != this) {
                             Rectangle myBox = new Rectangle((int)Math.round(X), (int)Math.round(Y), sprite.getWidth(null), sprite.getHeight(null));
                             Rectangle goBox = new Rectangle((int)Math.round(go.X), (int)Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null));
                             if (myBox.intersects(goBox)) {
