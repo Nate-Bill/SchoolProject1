@@ -105,8 +105,8 @@ public class GameObject implements IRenderable {
                     if (ir instanceof GameObject) {
                         GameObject go = (GameObject) ir;
                         if (go.collidable && go != this) {
-                            Rectangle myBox = new Rectangle((int)Math.round(X), (int)Math.round(Y), sprite.getWidth(null), sprite.getHeight(null));
-                            Rectangle goBox = new Rectangle((int)Math.round(go.X), (int)Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null));
+                            Rectangle myBox = new Rectangle((int)Math.round(X) - (sprite.getWidth(null) / 2), (int)Math.round(Y) - (sprite.getHeight(null) / 2), (int)Math.round(X) + (sprite.getWidth(null) / 2), (int)Math.round(Y) + (sprite.getHeight(null) / 2));
+                            Rectangle goBox = new Rectangle((int)Math.round(go.X) - (go.sprite.getWidth(null) / 2), (int)Math.round(go.Y) - (go.sprite.getHeight(null) / 2), (int)Math.round(go.X) + (go.sprite.getWidth(null) / 2), (int)Math.round(go.Y) + (go.sprite.getHeight(null) / 2));
                             if (myBox.intersects(goBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECT));
                             }
