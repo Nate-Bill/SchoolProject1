@@ -6,10 +6,7 @@
 package schoolgame;
 
 import schoolgame.Engine.GameEngine;
-import schoolgame.Game.BallComponent;
-import schoolgame.Game.DemoComponent;
-import schoolgame.Game.FrameCounterComponent;
-import schoolgame.Game.GameController;
+import schoolgame.Game.*;
 import schoolgame.Models.GameObject;
 import schoolgame.Models.MotionComponent;
 import schoolgame.Models.TextObject;
@@ -24,10 +21,10 @@ public class SchoolGame {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws InterruptedException {
-        new GameEngine();
-        new GameController();
-        new GameObject("bg", 400, 400, 0, "/schoolgame/resources/background.png", false);
-        new TextObject("fps", 0, 15, 100, "FPS: 0", new FrameCounterComponent());
+        new GameController(); //All prev code including new GameEngine, etc, has been moved to GameController#ctor
+        /*
+
+        This code serves as a test case to check function of game engine
 
         GameObject go = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/ball.png", true, new BallComponent());
         GameObject g1 = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/box.png", true, new BallComponent());
@@ -39,8 +36,13 @@ public class SchoolGame {
             go.rotation = i;
             Thread.sleep(10);
         }
-        
-        GameController.singleton.Start();
+        new GameObject("test", 400, 700, 10, "/schoolgame/resources/debug.png", true);
+        new GameObject("test", 400, 100, 10, "/schoolgame/resources/ball.png", true, new DestroyOnContactComponent()).AddMotion(new MotionComponent(0, 2, 300));
+        new GameObject("test", 400, 100, 10, "/schoolgame/resources/ball.png", true, new DestroyOnContactComponent()).AddMotion(new MotionComponent(0, 2, 300));
+        System.out.println("Count for object by name test: " + GameEngine.singleton.GetGameObjectsByName("test").size());
+        System.out.println("Count for object by comp DestroyOnContact: " + GameEngine.singleton.GetGameObjectsByComponent(DestroyOnContactComponent.class).size());
+        System.out.println("Count for comp DestroyOnContact in test: " + GameEngine.singleton.GetComponentFromGameObject(GameEngine.singleton.GetGameObjectsByComponent(DestroyOnContactComponent.class).get(0), DestroyOnContactComponent.class).size());
+        new GameObject("test", 400, 100, 10, "/schoolgame/resources/ball2.png", true, new DestroyOnContactComponent()).AddMotion(new MotionComponent(0, 2, 300));
+        */
     }
-    
 }

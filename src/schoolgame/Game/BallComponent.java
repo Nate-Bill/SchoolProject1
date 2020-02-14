@@ -35,52 +35,50 @@ public class BallComponent implements IGameObjectComponent {
         MotionComponent dmc = gameObject.pendingVectors.stream().findFirst().get();
         double Xc = dmc.x;
         double Yc = dmc.y;
-        double Ycoor = gameObject.Y;
         double Xcoor = gameObject.X;
-        System.out.println("Start x " + Xc);
-        System.out.println("Start y " + Yc);
         gameObject.pendingVectors.clear();
         if (type == CollisionEventType.WALLRIGHT) {
-            System.out.println("Right x " + Xc);
-            System.out.println("Right y " + Yc);
-            gameObject.AddMotion(new MotionComponent(-Xc, Yc, 9999));
+            gameObject.AddMotion(new MotionComponent(-Math.abs(Xc), Yc, 9999));
         }
         if (type == CollisionEventType.WALLLEFT) {
-            System.out.println("Left x " + Xc);
-            System.out.println("Left y " + Yc);
-            gameObject.AddMotion(new MotionComponent(-Xc, Yc, 9999));
+            gameObject.AddMotion(new MotionComponent(Math.abs(Xc), Yc, 9999));
         }
         if (type == CollisionEventType.WALLTOP) {
-            System.out.println("Top x " + Xc);
-            System.out.println("Top y " + Yc);
             gameObject.AddMotion(new MotionComponent(Xc, -Yc, 999));
         }
         if (type == CollisionEventType.WALLBOTTOM) {
-            System.out.println("Bottom x " + Xc);
-            System.out.println("Bottom y " + Yc);
-            System.out.println("Coor Y : " + Ycoor);
             gameObject.AddMotion(new MotionComponent(Xc, -Yc, 999));
-            if (GameController.singleton.IsMoved()) {
-                gameObject.Destroy();
-            } else {
-                GameController.singleton.SetBase((int) Xcoor);
-                gameObject.Destroy();
-
-            }
-            //FIND COORDS OF BALL AND SET BASE TO BE THERE
+            GameController.singleton.SetBase((int) Xcoor);
+            gameObject.Destroy();
         }
         MotionComponent dmcc = gameObject.pendingVectors.stream().findFirst().get();
         double nXc = dmcc.x;
         double nYc = dmcc.y;
-        System.out.println("Final x " + nXc);
-        System.out.println("Final y " + nYc);
-
 
     }
 
     @Override
     public void GameObjectCollideEvent(GameObject gameObject, GameObject gameObjectCollidedWith, CollisionEventType type) {
-
+        if (!gameObjectCollidedWith.name.equals("box")) return;
+        MotionComponent dmc = gameObject.pendingVectors.stream().findFirst().get();
+        double Xc = dmc.x;
+        double Yc = dmc.y;
+        double Xcoor = gameObject.X;
+        gameObject.pendingVectors.clear();
+        if (type == CollisionEventType.GAMEOBJECTRIGHT) {
+            gameObject.AddMotion(new MotionComponent(-Xc, Yc, 9999));
+        }
+        if (type == CollisionEventType.GAMEOBJECTLEFT) {
+            gameObject.AddMotion(new MotionComponent(-Xc, Yc, 9999));
+        }
+        if (type == CollisionEventType.GAMEOBJECTTOP) {
+            gameObject.AddMotion(new MotionComponent(Xc, -Math.abs(Yc), 999));
+        }
+        if (type == CollisionEventType.GAMEOBJECTBOTTOM) {
+            gameObject.AddMotion(new MotionComponent(Xc, Math.abs(Yc), 999));
+        }
+        MotionComponent dmcc = gameObject.pendingVectors.stream().findFirst().get();
+        double nXc = dmcc.x;
+        double nYc = dmcc.y;
     }
-
 }

@@ -5,18 +5,19 @@
  */
 package schoolgame.Engine;
 
+import schoolgame.Models.GameObject;
+import schoolgame.Models.IGameObjectComponent;
 import schoolgame.Models.IKeyCallback;
 import schoolgame.Models.IRenderable;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Queue;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 /**
  * @author 14NBill
@@ -54,25 +55,54 @@ public class GameEngine implements KeyListener {
             }
         }).start();
     }
-    /*
-    public static GameObject[] GetGameObjectByComponent(String name, IGameObjectComponent component) {
-        synchronized (singleton.activeObjects) {
-            return (GameObject[]) singleton.activeObjects.stream().filter(go -> go instanceof GameObject).filter(go -> ((GameObject)go).components.stream().anyMatch(c -> c instanceof component.class)).toArray();
-        }
-    } //TODO these helper
-    */
+
+    public List<GameObject> GetGameObjectsByComponent(Class<? extends IGameObjectComponent> component) {
+        List<? extends IRenderable> list = activeObjects.stream()
+                .filter(go -> go instanceof GameObject)
+                .filter(go -> ((GameObject) go).components.stream()
+                        .anyMatch(c -> c.getClass() == component))
+                .collect(Collectors.toList());
+        //We have to use this due to Java type checking and type saftey as ? extends IRenderable -> GameObject bypasses type saftey and is dangerous
+        List<GameObject> goList = new ArrayList<>();
+        list.forEach(ir -> {
+            if (ir instanceof GameObject) goList.add((GameObject)ir);
+        });
+        return goList;
+    }
+
+    public List<GameObject> GetGameObjectsByName(String name) {
+        List<? extends IRenderable> list = activeObjects.stream()
+                .filter(go -> go instanceof GameObject)
+                .filter(go -> ((GameObject) go).name.equals(name))
+                .collect(Collectors.toList());
+        //We have to use this due to Java type checking and type saftey as ? extends IRenderable -> GameObject bypasses type saftey and is dangerous
+        List<GameObject> goList = new ArrayList<>();
+        list.forEach(ir -> {
+            if (ir instanceof GameObject) goList.add((GameObject)ir);
+        });
+        return goList;
+    }
+
+    public List<IGameObjectComponent> GetComponentFromGameObject(GameObject gameObject, Class<? extends IGameObjectComponent> component) {
+        return gameObject.components.stream().filter(c -> c.getClass() == component).collect(Collectors.toList());
+    }
 
     public void DoRender(Graphics g) {
         if (activeObjects.size() == 0) {
             return;
         }
-        ArrayList<IRenderable> iRenderableList = new ArrayList<IRenderable>(activeObjects);
+        ArrayList<IRenderable> iRenderableList = new ArrayList<>(activeObjects);
         iRenderableList.sort(Comparator.comparingInt(IRenderable::GetZ));
         if (iRenderableList.get(0).GetZ() > iRenderableList.get(iRenderableList.size() - 1).GetZ()) {
             Collections.reverse(iRenderableList);
         }
         for (IRenderable renderable : iRenderableList) {
-            renderable.DoRender(g);
+            try {
+                renderable.DoRender(g);
+            } catch (Exception ex) {
+                System.out.println("An error occurred while rendering an IRenderable: " + ex.getMessage());
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -86,16 +116,37 @@ public class GameEngine implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent ke) {
-        for (IKeyCallback r : keys) r.KeyType(ke);
+        for (IKeyCallback r : keys) {
+            try {
+                r.KeyType(ke);
+            } catch (Exception ex) {
+                System.out.println("Couldnt pass KeyType event to " + r.getClass().getTypeName());
+                ex.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        for (IKeyCallback r : keys) r.KeyPress(ke);
+        for (IKeyCallback r : keys) {
+            try {
+                r.KeyPress(ke);
+            } catch (Exception ex) {
+                System.out.println("Couldnt pass KeyPress event to " + r.getClass().getTypeName());
+                ex.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
-        for (IKeyCallback r : keys) r.KeyRelease(ke);
+        for (IKeyCallback r : keys) {
+            try {
+                r.KeyRelease(ke);
+            } catch (Exception ex) {
+                System.out.println("Couldnt pass KeyRelease event to " + r.getClass().getTypeName());
+                ex.printStackTrace();
+            }
+        }
     }
 }
