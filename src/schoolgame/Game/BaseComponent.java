@@ -15,11 +15,8 @@ import schoolgame.Models.IGameObjectComponent;
  */
 public class BaseComponent implements IGameObjectComponent {
     
-    public void SetPosition(GameObject gameObject, int Xpos){
-        
-        gameObject.X = Xpos;
-        
-    }
+    
+    
     @Override
     public void Update(GameObject gameObject) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

@@ -37,7 +37,8 @@ public class BallComponent implements IGameObjectComponent {
             MotionComponent dmc = (MotionComponent) gameObject.pendingVectors.stream().findFirst().get();
             double Xc = dmc.x;
             double Yc = dmc.y;
-            double Ycoor = gameObject.Y + gameObject.sprite.getHeight(null);
+            double Ycoor = gameObject.Y;
+            double Xcoor = gameObject.X;
             System.out.println("Start x "+Xc);
             System.out.println("Start y " +Yc);
             gameObject.pendingVectors.clear();
@@ -60,7 +61,16 @@ public class BallComponent implements IGameObjectComponent {
                 System.out.println("Bottom x "+Xc);
                 System.out.println("Bottom y " +Yc);
                 System.out.println("Coor Y : "+Ycoor);
-                gameObject.AddMotion(new MotionComponent(Xc, -Yc, 999));
+                gameObject.AddMotion(new MotionComponent(Xc, -Yc, 999));;
+                
+                if(GameController.singleton.IsMoved()){
+                   gameObject.Destroy();
+                }
+                else{
+                    GameController.singleton.SetBase((int)Xcoor);
+                    gameObject.Destroy();
+                    
+                }
                 //FIND COORDS OF BALL AND SET BASE TO BE THERE
             }
             MotionComponent dmcc = (MotionComponent) gameObject.pendingVectors.stream().findFirst().get();
