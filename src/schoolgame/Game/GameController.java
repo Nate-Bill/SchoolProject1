@@ -5,6 +5,7 @@
  */
 package schoolgame.Game;
 
+import schoolgame.Engine.GameEngine;
 import schoolgame.Models.GameObject;
 
 /**
@@ -27,23 +28,19 @@ public class GameController {
     
     public void SetBase(int X){
         BaseX = X;
-        boolean basemoved = true;
+        this.basemoved = true;
+        MoveBase();
     }
     
-    public void Start(){
-        
-        
-        GameObject base = new GameObject("debug", BaseX, 700, 1, "/schoolgame/resources/cannon.png", true, new DemoComponent());
-
-        base.X = (BaseX)-(base.sprite.getWidth(null)/2);
-        base.Y = 700-base.sprite.getHeight(null);
-        
-        
-        
-        
-        
+    public void MoveBase(){
+        GameObject base = (GameObject)GameEngine.singleton.activeObjects.stream().filter(i ->  i instanceof GameObject).filter(go -> ((GameObject)go).name.equals("base")).findFirst().get();
+        base.X = BaseX;
     }
     
-    
-    
+    public void Start(){       
+        GameObject base = new GameObject("base", BaseX, 700, 1, "/schoolgame/resources/cannon.png", true, new DemoComponent());
+        base.X = (BaseX);
+        base.Y = 700-base.sprite.getHeight(null)/2;    
+        
+    }  
 }

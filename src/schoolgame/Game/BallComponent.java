@@ -61,13 +61,14 @@ public class BallComponent implements IGameObjectComponent {
                 System.out.println("Bottom x "+Xc);
                 System.out.println("Bottom y " +Yc);
                 System.out.println("Coor Y : "+Ycoor);
-                gameObject.AddMotion(new MotionComponent(Xc, -Yc, 999));;
+                gameObject.AddMotion(new MotionComponent(Xc, -Yc, 999));
                 if(GameController.singleton.IsMoved()){
-                   //DESTORY
+                   gameObject.Destroy();
                 }
                 else{
                     GameController.singleton.SetBase((int)Xcoor);
-                    //DESTROY
+                    gameObject.Destroy();
+                    
                 }
                 //FIND COORDS OF BALL AND SET BASE TO BE THERE
             }
