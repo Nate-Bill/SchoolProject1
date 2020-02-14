@@ -32,6 +32,8 @@ public class GameEngine implements KeyListener {
     public Boolean cancellationToken = false;
 
     private RenderEngine renderer;
+    
+    public int lastFrameTime;
 
     public GameEngine() {
         singleton = this;
@@ -47,8 +49,10 @@ public class GameEngine implements KeyListener {
         new Thread(() -> {
             while (!GameEngine.singleton.cancellationToken) {
                 try {
+                    long timeMilis = System.currentTimeMillis();
                     GameEngine.singleton.renderer.repaint();
                     Thread.sleep(10);
+                    lastFrameTime = (int) (System.currentTimeMillis() - timeMilis);
                 } catch (Exception ignored) {
 
                 }
