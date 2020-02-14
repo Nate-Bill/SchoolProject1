@@ -7,91 +7,68 @@ package schoolgame.Models;
 
 import schoolgame.Engine.GameEngine;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- *
  * @author 14NBill
  */
 public class TextObject implements IRenderable {
 
+    public final Queue<MotionComponent> pendingVectors = new ConcurrentLinkedQueue<>();
+    public final Queue<ITextObjectComponent> components = new ConcurrentLinkedQueue<>();
     public double X, Y;
-    
     public int Z;
-
     public String text;
-
     public String name;
-
-    public final List<MotionComponent> pendingVectors = Collections.synchronizedList(new ArrayList<>());
-
-    public final List<ITextObjectComponent> components = Collections.synchronizedList(new ArrayList<>());
-
     public int rotation = 0;
 
     public TextObject(String name, int x, int y, int z, String text, ITextObjectComponent... components) {
-        synchronized (GameEngine.singleton.activeObjects) {
-            this.name = name;
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
-            this.text = text;
-            this.components.addAll(Arrays.asList(components));
-            GameEngine.singleton.activeObjects.add(this);
-            this.components.forEach(goc -> goc.Start(this));
-        }
+        this.name = name;
+        this.X = x;
+        this.Y = y;
+        this.Z = z;
+        this.text = text;
+        this.components.addAll(Arrays.asList(components));
+        GameEngine.singleton.activeObjects.add(this);
+        this.components.forEach(goc -> goc.Start(this));
     }
 
     public void Destroy() {
-        synchronized (pendingVectors) {
-            this.components.forEach(goc -> goc.Destroy(this));
-            this.components.clear();
-        }
-        synchronized (GameEngine.singleton.activeObjects) {
-            GameEngine.singleton.activeObjects.remove(this);
-        }
+        this.components.forEach(goc -> goc.Destroy(this));
+        this.components.clear();
+        GameEngine.singleton.activeObjects.remove(this);
     }
 
     public void AddMotion(MotionComponent motionComponent) {
-        synchronized (pendingVectors) {
-            pendingVectors.add(motionComponent);
-        }
+        pendingVectors.add(motionComponent);
     }
 
     public void AddComponent(ITextObjectComponent component) {
-        synchronized (component) {
-            components.add(component);
-            component.Start(this);
-        }
+        components.add(component);
+        component.Start(this);
     }
 
     @Override
     public void DoRender(Graphics g) {
         ArrayList<MotionComponent> toDelete = new ArrayList<>();
-        synchronized (pendingVectors) {
-            for (MotionComponent mc : pendingVectors) {
-                if (mc.frames <= 0) {
-                    toDelete.add(mc);
-                    continue;
-                }
-                this.X += mc.x;
-                this.Y += mc.y;
-                mc.frames--;
+        for (MotionComponent mc : pendingVectors) {
+            if (mc.frames <= 0) {
+                toDelete.add(mc);
+                continue;
             }
-            pendingVectors.removeAll(toDelete);
+            this.X += mc.x;
+            this.Y += mc.y;
+            mc.frames--;
         }
-        synchronized (components) {
-            components.forEach(goc -> goc.Update(this));
-        }
+        pendingVectors.removeAll(toDelete);
+        components.forEach(goc -> goc.Update(this));
         g.setColor(Color.WHITE);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 18));
-        g.drawString(text, (int)Math.round(X), (int)Math.round(Y));
+        g.drawString(text, (int) Math.round(X), (int) Math.round(Y));
 
     }
 

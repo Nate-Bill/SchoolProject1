@@ -5,35 +5,30 @@
  */
 package schoolgame.Engine;
 
+import schoolgame.Models.IKeyCallback;
 import schoolgame.Models.IRenderable;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import javax.swing.JFrame;
-import schoolgame.Models.GameObject;
-import schoolgame.Models.IGameObjectComponent;
-import schoolgame.Models.IKeyCallback;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- *
  * @author 14NBill
  */
 public class GameEngine implements KeyListener {
 
-    public final List<IRenderable> activeObjects = Collections.synchronizedList(new ArrayList<>());
-
     public static GameEngine singleton;
-
+    public final Queue<IRenderable> activeObjects = new ConcurrentLinkedQueue<>();
     public Boolean cancellationToken = false;
-
-    private RenderEngine renderer;
-    
     public int lastFrameTime;
+    Queue<IKeyCallback> keys = new ConcurrentLinkedQueue<>();
+    private RenderEngine renderer;
 
     public GameEngine() {
         singleton = this;
@@ -59,21 +54,6 @@ public class GameEngine implements KeyListener {
             }
         }).start();
     }
-
-    public void DoRender(Graphics g) {
-        synchronized (activeObjects) {
-            if (activeObjects.size() == 0) {
-                return;
-            }
-            activeObjects.sort(Comparator.comparingInt(IRenderable::GetZ));
-            if (activeObjects.get(0).GetZ() > activeObjects.get(activeObjects.size() - 1).GetZ()) {
-                Collections.reverse(activeObjects);
-            }
-            for (IRenderable renderable : activeObjects) {
-                renderable.DoRender(g);
-            }
-        }
-    }
     /*
     public static GameObject[] GetGameObjectByComponent(String name, IGameObjectComponent component) {
         synchronized (singleton.activeObjects) {
@@ -82,38 +62,40 @@ public class GameEngine implements KeyListener {
     } //TODO these helper
     */
 
-    ArrayList<IKeyCallback> keys = new ArrayList<>();
-    
+    public void DoRender(Graphics g) {
+        if (activeObjects.size() == 0) {
+            return;
+        }
+        ArrayList<IRenderable> iRenderableList = new ArrayList<IRenderable>(activeObjects);
+        iRenderableList.sort(Comparator.comparingInt(IRenderable::GetZ));
+        if (iRenderableList.get(0).GetZ() > iRenderableList.get(iRenderableList.size() - 1).GetZ()) {
+            Collections.reverse(iRenderableList);
+        }
+        for (IRenderable renderable : iRenderableList) {
+            renderable.DoRender(g);
+        }
+    }
+
     public void RegisterKeyListener(IKeyCallback kl) {
-        synchronized (keys) {
-            keys.add(kl);
-        }
+        keys.add(kl);
     }
-    
+
     public void UnregisterKeyListener(IKeyCallback kl) {
-        synchronized (keys) {
-            keys.remove(kl);
-        }
+        keys.remove(kl);
     }
-    
+
     @Override
     public void keyTyped(KeyEvent ke) {
-        synchronized (keys) {
-            for (IKeyCallback r : keys) r.KeyType(ke);
-        }
+        for (IKeyCallback r : keys) r.KeyType(ke);
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        synchronized (keys) {
-            for (IKeyCallback r : keys) r.KeyPress(ke);
-        }
+        for (IKeyCallback r : keys) r.KeyPress(ke);
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
-        synchronized (keys) {
-            for (IKeyCallback r : keys) r.KeyRelease(ke);
-        }
+        for (IKeyCallback r : keys) r.KeyRelease(ke);
     }
 }

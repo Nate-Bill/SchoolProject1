@@ -33,7 +33,6 @@ public class BallComponent implements IGameObjectComponent {
 
     @Override
     public void WallCollideEvent(GameObject gameObject, CollisionEventType type) {
-        synchronized(gameObject.pendingVectors){
             MotionComponent dmc = (MotionComponent) gameObject.pendingVectors.stream().findFirst().get();
             double Xc = dmc.x;
             double Yc = dmc.y;
@@ -77,8 +76,7 @@ public class BallComponent implements IGameObjectComponent {
             double nYc = dmcc.y;
             System.out.println("Final x "+nXc);
             System.out.println("Final y "+nYc);
-            
-        }
+
         
     }
 
