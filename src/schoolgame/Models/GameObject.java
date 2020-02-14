@@ -92,13 +92,13 @@ public class GameObject implements IRenderable {
         synchronized (components) {
             components.forEach(goc -> goc.Update(this));
             if (collidable && components.size() > 0) {
-                if (X + sprite.getWidth(null) > 800) {
+                if (X + (sprite.getWidth(null) / 2) > 800) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLRIGHT));
-                } else if (X < 0) {
+                } else if (X - (sprite.getWidth(null) / 2) < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLLEFT));
-                } else if (Y < 0) {
+                } else if (Y - (sprite.getHeight(null) / 2) < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLTOP));
-                } else if (Y + sprite.getHeight(null)> 700) {
+                } else if (Y + (sprite.getHeight(null) / 2) > 700) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLBOTTOM));
                 }
                 for (IRenderable ir : GameEngine.singleton.activeObjects) {
@@ -115,7 +115,7 @@ public class GameObject implements IRenderable {
                 }
             }
         }
-        AffineTransform at = AffineTransform.getTranslateInstance(X, Y);
+        AffineTransform at = AffineTransform.getTranslateInstance(X - (sprite.getWidth(null) / 2), Y - (sprite.getHeight(null) / 2));
         at.rotate(Math.toRadians(rotation), sprite.getWidth(null) / 2, sprite.getHeight(null) / 2);
         ((Graphics2D) g).drawImage(sprite, at, null);
     }
