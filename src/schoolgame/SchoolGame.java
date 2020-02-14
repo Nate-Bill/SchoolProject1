@@ -25,10 +25,11 @@ public class SchoolGame {
      */
     public static void main(String[] args) throws InterruptedException {
         new GameEngine();
+        new GameController();
         new GameObject("bg", 400, 400, 0, "/schoolgame/resources/background.png", false);
         new TextObject("fps", 0, 15, 100, "FPS: 0", new FrameCounterComponent());
-        /*
-                GameObject go = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/ball.png", true, new BallComponent());
+
+        GameObject go = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/ball.png", true, new BallComponent());
         GameObject g1 = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/box.png", true, new BallComponent());
         GameObject g2 = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/cannon.png", true, new BallComponent());
         go.AddMotion(new MotionComponent(3, 3, 300));
@@ -38,8 +39,6 @@ public class SchoolGame {
             go.rotation = i;
             Thread.sleep(10);
         }
-                */
-        new GameController();
         
         GameController.singleton.Start();
     }

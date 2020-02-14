@@ -7,6 +7,9 @@ package schoolgame.Game;
 
 import schoolgame.Engine.GameEngine;
 import schoolgame.Models.GameObject;
+import schoolgame.Models.IRenderable;
+
+import java.util.Optional;
 
 /**
  *
@@ -33,7 +36,9 @@ public class GameController {
     }
     
     public void MoveBase(){
-        GameObject base = (GameObject)GameEngine.singleton.activeObjects.stream().filter(i ->  i instanceof GameObject).filter(go -> ((GameObject)go).name.equals("base")).findFirst().get();
+        Optional<IRenderable> baseOptional = GameEngine.singleton.activeObjects.stream().filter(i ->  i instanceof GameObject).filter(go -> ((GameObject)go).name.equals("base")).findFirst();
+        if (baseOptional.isEmpty()) return;
+        GameObject base = (GameObject)baseOptional.get();
         base.X = BaseX;
     }
     
