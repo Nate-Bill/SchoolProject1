@@ -37,20 +37,10 @@ public class GameController {
         base.X = BaseX;
     }
     
-    public void Start(){
-        
-        
+    public void Start(){       
         GameObject base = new GameObject("base", BaseX, 700, 1, "/schoolgame/resources/cannon.png", true, new DemoComponent());
-
         base.X = (BaseX);
-        base.Y = 700-base.sprite.getHeight(null)/2;
+        base.Y = 700-base.sprite.getHeight(null)/2;    
         
-        
-        
-        
-        
-    }
-    
-    
-    
+    }  
 }

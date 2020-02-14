@@ -8,6 +8,7 @@ package schoolgame;
 import schoolgame.Engine.GameEngine;
 import schoolgame.Game.BallComponent;
 import schoolgame.Game.DemoComponent;
+import schoolgame.Game.GameController;
 import schoolgame.Models.GameObject;
 import schoolgame.Models.MotionComponent;
 
@@ -23,7 +24,8 @@ public class SchoolGame {
     public static void main(String[] args) throws InterruptedException {
         new GameEngine();
         new GameObject("bg", 0, 0, 0, "/schoolgame/resources/background.png", false);
-        GameObject go = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/ball.png", true, new BallComponent());
+        /*
+                GameObject go = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/ball.png", true, new BallComponent());
         GameObject g1 = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/box.png", true, new BallComponent());
         GameObject g2 = new GameObject("debug", 200, 200, 1, "/schoolgame/resources/cannon.png", true, new BallComponent());
         go.AddMotion(new MotionComponent(3, 3, 300));
@@ -33,6 +35,10 @@ public class SchoolGame {
             go.rotation = i;
             Thread.sleep(10);
         }
+                */
+        new GameController();
+        
+        GameController.singleton.Start();
     }
     
 }

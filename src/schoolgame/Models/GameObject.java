@@ -92,21 +92,21 @@ public class GameObject implements IRenderable {
         synchronized (components) {
             components.forEach(goc -> goc.Update(this));
             if (collidable && components.size() > 0) {
-                if (X + sprite.getWidth(null) > 800) {
+                if (X + (sprite.getWidth(null) / 2) > 800) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLRIGHT));
-                } else if (X < 0) {
+                } else if (X - (sprite.getWidth(null) / 2) < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLLEFT));
-                } else if (Y < 0) {
+                } else if (Y - (sprite.getHeight(null) / 2) < 0) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLTOP));
-                } else if (Y + sprite.getHeight(null)> 700) {
+                } else if (Y + (sprite.getHeight(null) / 2) > 700) {
                     components.forEach(goc -> goc.WallCollideEvent(this, CollisionEventType.WALLBOTTOM));
                 }
                 for (IRenderable ir : GameEngine.singleton.activeObjects) {
                     if (ir instanceof GameObject) {
                         GameObject go = (GameObject) ir;
-                        if (go.collidable) {
-                            Rectangle myBox = new Rectangle((int)Math.round(X), (int)Math.round(Y), sprite.getWidth(null), sprite.getHeight(null));
-                            Rectangle goBox = new Rectangle((int)Math.round(go.X), (int)Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null));
+                        if (go.collidable && go != this) {
+                            Rectangle myBox = new Rectangle((int)Math.round(X) - (sprite.getWidth(null) / 2), (int)Math.round(Y) - (sprite.getHeight(null) / 2), (int)Math.round(X) + (sprite.getWidth(null) / 2), (int)Math.round(Y) + (sprite.getHeight(null) / 2));
+                            Rectangle goBox = new Rectangle((int)Math.round(go.X) - (go.sprite.getWidth(null) / 2), (int)Math.round(go.Y) - (go.sprite.getHeight(null) / 2), (int)Math.round(go.X) + (go.sprite.getWidth(null) / 2), (int)Math.round(go.Y) + (go.sprite.getHeight(null) / 2));
                             if (myBox.intersects(goBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECT));
                             }
@@ -115,7 +115,7 @@ public class GameObject implements IRenderable {
                 }
             }
         }
-        AffineTransform at = AffineTransform.getTranslateInstance(X, Y);
+        AffineTransform at = AffineTransform.getTranslateInstance(X - (sprite.getWidth(null) / 2), Y - (sprite.getHeight(null) / 2));
         at.rotate(Math.toRadians(rotation), sprite.getWidth(null) / 2, sprite.getHeight(null) / 2);
         ((Graphics2D) g).drawImage(sprite, at, null);
     }
