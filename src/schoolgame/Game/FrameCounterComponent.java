@@ -5,39 +5,36 @@
  */
 package schoolgame.Game;
 
+import schoolgame.Engine.GameEngine;
 import schoolgame.Models.CollisionEventType;
 import schoolgame.Models.GameObject;
 import schoolgame.Models.IGameObjectComponent;
+import schoolgame.Models.ITextObjectComponent;
+import schoolgame.Models.TextObject;
 
 /**
  *
  * @author 14NBill
  */
-public class FrameCounterComponent implements IGameObjectComponent {
+public class FrameCounterComponent implements ITextObjectComponent {
 
-    
     @Override
-    public void Update(GameObject gameObject) {
+    public void Update(TextObject textObject) {
+        try {
+            textObject.text = "FPS: " + (1000 / (GameEngine.singleton.lastFrameTime) + " (" + GameEngine.singleton.lastFrameTime + "ms)");
+        } catch (Exception ignored) {
+            
+        }
     }
 
     @Override
-    public void Start(GameObject gameObject) {
-        
+    public void Start(TextObject textObject) {
+     
     }
 
     @Override
-    public void Destroy(GameObject gameObject) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void WallCollideEvent(GameObject gameObject, CollisionEventType type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void GameObjectCollideEvent(GameObject gameObject, GameObject gameObjectCollidedWith, CollisionEventType type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void Destroy(TextObject textObject) {
+     
     }
     
 }
