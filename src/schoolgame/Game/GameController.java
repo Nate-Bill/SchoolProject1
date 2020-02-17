@@ -36,9 +36,8 @@ public class GameController {
     }
 
 
-    public void SetBase(int X, boolean resetRotation) {
+    public void SetBase(int X) {
         BaseX = X;
-        MoveBase(resetRotation);
     }
 
     public void MoveBase(boolean resetRotation) {
@@ -71,6 +70,7 @@ public class GameController {
 
     public void NextRound() {
         round++;
+        MoveBase(true);
         new Thread(() -> {
             GameEngine.singleton.GetGameObjectsByName("box").forEach(box -> {
                 box.AddMotion(new MotionComponent(0, 5, 17));
