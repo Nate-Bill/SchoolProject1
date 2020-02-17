@@ -75,7 +75,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
                 for (int i = 1; i <= GameController.singleton.ballCount; i++) {
                     try {
                         new GameObject("ball", (int) me.X, (int) me.Y + 42, 10, "/schoolgame/resources/ball2.png", true, new BallComponent()).AddMotion(new MotionComponent(deltaX, -deltaY, 3000));
-                        Thread.sleep(50);
+                        Thread.sleep(100);
                     } catch (Exception ignored) {
 
                     }

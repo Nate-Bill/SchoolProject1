@@ -53,8 +53,8 @@ public class BallComponent implements IGameObjectComponent {
         }
         if (type == CollisionEventType.WALLBOTTOM) {
             gameObject.visible = false;
-            gameObject.Destroy();
             GameController.singleton.SetBase((int) Xcoor);
+            gameObject.Destroy();
         }
     }
 

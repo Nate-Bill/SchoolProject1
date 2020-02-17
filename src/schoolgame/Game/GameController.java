@@ -38,6 +38,7 @@ public class GameController {
 
     public void SetBase(int X) {
         BaseX = X;
+        if (GameEngine.singleton.GetGameObjectsByName("ball").size() == 1) MoveBase(true);
     }
 
     public void MoveBase(boolean resetRotation) {
