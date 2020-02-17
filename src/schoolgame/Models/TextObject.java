@@ -25,8 +25,9 @@ public class TextObject implements IRenderable {
     public String text;
     public String name;
     public int rotation = 0;
+    public boolean visible = true;
 
-    public TextObject(String name, int x, int y, int z, String text, ITextObjectComponent... components) {
+    public TextObject(String name, double x, double y, int z, String text, ITextObjectComponent... components) {
         this.name = name;
         this.X = x;
         this.Y = y;
@@ -68,8 +69,7 @@ public class TextObject implements IRenderable {
         components.forEach(goc -> goc.Update(this));
         g.setColor(Color.WHITE);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 18));
-        g.drawString(text, (int) Math.round(X), (int) Math.round(Y));
-
+        if (visible) g.drawString(text, (int) Math.round(X), (int) Math.round(Y));
     }
 
     @Override

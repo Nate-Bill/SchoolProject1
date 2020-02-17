@@ -45,9 +45,9 @@ public class GameObject implements IRenderable {
     }
 
     public void Destroy() {
+        GameEngine.singleton.activeObjects.remove(this);
         this.components.forEach(goc -> goc.Destroy(this));
         this.components.clear();
-        GameEngine.singleton.activeObjects.remove(this);
     }
 
     public void AddMotion(MotionComponent motionComponent) {
@@ -141,7 +141,7 @@ public class GameObject implements IRenderable {
         Point bottomRight = points.get(3);
         int height = bottomLeft.y - topLeft.y;
         int width = topRight.x - topLeft.x;
-        int widthFactor = 100;
+        int widthFactor = 50;
         if (mode == 0) { //Standard box
             return new Rectangle(topLeft.x, topLeft.y, width, height);
         } else if (mode == 1) { //Bottom

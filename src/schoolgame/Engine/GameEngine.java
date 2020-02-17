@@ -16,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
@@ -28,15 +29,17 @@ public class GameEngine implements KeyListener {
     public final Queue<IRenderable> activeObjects = new ConcurrentLinkedQueue<>();
     public Boolean cancellationToken = false;
     public int lastFrameTime;
+    public long frames;
     Queue<IKeyCallback> keys = new ConcurrentLinkedQueue<>();
     private RenderEngine renderer;
+    private ConcurrentHashMap<Long, Boolean> frameUpdates = new ConcurrentHashMap<>();
 
     public GameEngine() {
         singleton = this;
         JFrame jframe = new JFrame();
         renderer = new RenderEngine();
         jframe.add(renderer);
-        jframe.setTitle("Bricks VS Block");
+        jframe.setTitle("Balls VS Block");
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jframe.setSize(800, 800);
         jframe.addKeyListener(this);
@@ -49,6 +52,13 @@ public class GameEngine implements KeyListener {
                     GameEngine.singleton.renderer.repaint();
                     Thread.sleep(10);
                     lastFrameTime = (int) (System.currentTimeMillis() - timeMilis);
+                    frames++;
+                    frameUpdates.forEach((k,v) -> {
+                        if (k <= frames) {
+                            frameUpdates.replace(k, true);
+                        }
+                    });
+                    if (frames > (Long.MAX_VALUE - 100)) frames = 0;
                 } catch (Exception ignored) {
 
                 }
@@ -147,6 +157,13 @@ public class GameEngine implements KeyListener {
                 System.out.println("Couldnt pass KeyRelease event to " + r.getClass().getTypeName());
                 ex.printStackTrace();
             }
+        }
+    }
+
+    public void BlockForFrames(int framesToWait) {
+        long frameTarget = this.frames + framesToWait;
+        frameUpdates.put(frameTarget, false);
+        while (!frameUpdates.get(frameTarget)) { //Do nothing until frame target reached
         }
     }
 }

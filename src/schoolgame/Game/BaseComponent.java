@@ -17,10 +17,19 @@ import java.awt.event.KeyEvent;
 public class BaseComponent implements IGameObjectComponent, IKeyCallback {
     
     GameObject me;
+
+    TextObject counter;
     
     @Override
     public void Update(GameObject gameObject) {
-
+        if (me.visible) {
+            counter.visible = true;
+            counter.text = "x" + GameController.singleton.ballCount;
+            counter.X = me.X - 30;
+            counter.Y = me.Y + 55;
+        } else {
+            counter.visible = false;
+        }
     }
 
     @Override
@@ -28,6 +37,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
         this.me = gameObject;
         GameEngine.singleton.RegisterKeyListener(this);
         me.yRotationOffset = 42;
+        counter = new TextObject("ballCountBase", 0, 0, 0, "x1");
     }
 
     @Override
@@ -59,19 +69,21 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
         } else if (ke.getKeyCode() == 38 || ke.getKeyCode() == 32) { //Up or space
             if (!GameController.singleton.canFire) return;
             new Thread (() -> {
-                int speed = 3;
+                int speed = 4;
                 double deltaY = speed * Math.sin(Math.toRadians(90 - me.rotation));
                 double deltaX = speed * Math.cos(Math.toRadians(90 - me.rotation));
                 for (int i = 1; i <= GameController.singleton.ballCount; i++) {
                     try {
-                        new GameObject("ball", (int) me.X, (int) me.Y + 42, (int) 10, "/schoolgame/resources/ball2.png", true, new BallComponent()).AddMotion(new MotionComponent(deltaX, -deltaY, 3000));
-                        Thread.sleep(100);
+                        new GameObject("ball", (int) me.X, (int) me.Y + 42, 10, "/schoolgame/resources/ball2.png", true, new BallComponent()).AddMotion(new MotionComponent(deltaX, -deltaY, 3000));
+                        Thread.sleep(50);
                     } catch (Exception ignored) {
 
                     }
                 }
                 me.visible = false;
             }).start();
+        } else if (ke.getKeyCode() == 61) {
+            GameController.singleton.ballCount += 5;
         }
     }
 
