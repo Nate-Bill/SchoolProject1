@@ -49,7 +49,7 @@ public class BallComponent implements IGameObjectComponent {
             gameObject.AddMotion(new MotionComponent(Math.abs(Xc), Yc, 9999));
         }
         if (type == CollisionEventType.WALLTOP) {
-            gameObject.AddMotion(new MotionComponent(Xc, -Yc, 999));
+            gameObject.AddMotion(new MotionComponent(Xc, Math.abs(Yc), 999));
         }
         if (type == CollisionEventType.WALLBOTTOM) {
             gameObject.visible = false;

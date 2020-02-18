@@ -7,9 +7,13 @@ package schoolgame.Game;
 
 import schoolgame.Engine.GameEngine;
 import schoolgame.Models.GameObject;
+import schoolgame.Models.IGameObjectComponent;
 import schoolgame.Models.MotionComponent;
 import schoolgame.Models.TextObject;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -25,6 +29,7 @@ public class GameController {
     public TextObject tutorial;
     public TextObject scoreCounter;
     public TextObject ballCounter;
+    public boolean isFiring = false;
     private int BaseX = 400;
 
     public GameController() {
@@ -38,7 +43,7 @@ public class GameController {
 
     public void SetBase(int X) {
         BaseX = X;
-        if (GameEngine.singleton.GetGameObjectsByName("ball").size() == 1) MoveBase(true);
+        if (GameEngine.singleton.GetGameObjectsByName("ball").size() == 1 && !isFiring) MoveBase(true);
     }
 
     public void MoveBase(boolean resetRotation) {
@@ -61,12 +66,13 @@ public class GameController {
                     tutorial.Destroy();
                     tutorial = null;
                 }
+                canFire = canFire && GameEngine.singleton.GetGameObjectsByName("box").stream().noneMatch(go -> go.Y > 685);
             }
         }).start();
     }
 
     public void CheckNextRound() {
-        if (GameEngine.singleton.GetGameObjectsByName("ball").size() == 0) NextRound();
+        if (GameEngine.singleton.GetGameObjectsByName("ball").size() == 0 && !isFiring) NextRound();
     }
 
     public void NextRound() {
@@ -111,7 +117,30 @@ public class GameController {
                 GameEngine.singleton.BlockForFrames(17);
             }
             if (GameEngine.singleton.GetGameObjectsByName("box").stream().anyMatch(go -> go.Y > 685)) {
-                GameEngine.singleton.BlockForFrames(20);
+                GameEngine.singleton.GetGameObjectsByName("box").stream().filter(go -> go.Y > 685).forEach(go -> GameEngine.singleton.GetComponentFromGameObject(go, BoxComponent.class).forEach(igo -> {
+                    if (igo instanceof  BoxComponent) {
+                        BoxComponent box = (BoxComponent) igo;
+                        box.DontChangeColour = true;
+                        box.ChangeColourOverride(go, Color.RED);
+                    }
+                }));
+                GameEngine.singleton.BlockForFrames(50);
+                GameEngine.singleton.GetGameObjectsByName("box").stream().filter(go -> go.Y > 685).forEach(go -> GameEngine.singleton.GetComponentFromGameObject(go, BoxComponent.class).forEach(igo -> {
+                    if (igo instanceof  BoxComponent) {
+                        BoxComponent box = (BoxComponent) igo;
+                        box.DontChangeColour = true;
+                        box.ChangeColourOverride(go, Color.DARK_GRAY);
+                    }
+                }));
+                GameEngine.singleton.BlockForFrames(50);
+                GameEngine.singleton.GetGameObjectsByName("box").stream().filter(go -> go.Y > 685).forEach(go -> GameEngine.singleton.GetComponentFromGameObject(go, BoxComponent.class).forEach(igo -> {
+                    if (igo instanceof  BoxComponent) {
+                        BoxComponent box = (BoxComponent) igo;
+                        box.DontChangeColour = true;
+                        box.ChangeColourOverride(go, Color.RED);
+                    }
+                }));
+                GameEngine.singleton.BlockForFrames(50);
                 GameEngine.singleton.GetGameObjectsByName("box").forEach(GameObject::Destroy);
                 GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(GameObject::Destroy);
                 tutorial = new TextObject("tutorial", 220, 400, 1000, "Game Over! Press space to try again. Score: " + round);

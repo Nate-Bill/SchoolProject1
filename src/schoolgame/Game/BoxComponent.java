@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 
 public class BoxComponent implements IGameObjectComponent {
     public int strength;
+    public boolean DontChangeColour = false;
 
     private TextObject label;
 
@@ -28,7 +29,7 @@ public class BoxComponent implements IGameObjectComponent {
             label.Y = gameObject.Y + 6;
             label.text = String.valueOf(strength);
         }
-        gameObject.sprite = ChangeColour(gameObject.sprite);
+        if (!DontChangeColour) gameObject.sprite = ChangeColour(gameObject.sprite);
     }
 
     @Override
@@ -59,7 +60,6 @@ public class BoxComponent implements IGameObjectComponent {
 
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
-                Color color = new Color(img.getRGB(col, row));
                 int pixel = img.getRGB(col,row);
                 if ((pixel>>24) == 0x00 ) {
                     continue;
@@ -69,6 +69,26 @@ public class BoxComponent implements IGameObjectComponent {
             }
         }
         return img;
+    }
+
+    public void ChangeColourOverride(GameObject self, Color c) {
+        BufferedImage img = toBufferedImage(self.sprite);
+        int width = img.getWidth();
+        int height = img.getHeight();
+
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                int pixel = img.getRGB(col,row);
+                if ((pixel>>24) == 0x00 ) {
+                    continue;
+                }
+                if (c != null) {
+                    img.setRGB(col, row, c.getRGB());
+                } else {
+                    img.setRGB(col, row, new Color(0, 0, 0, 0).getRGB());
+                }
+            }
+        }
     }
 
     private int interpolateColor(Color x, Color y, float blending) {

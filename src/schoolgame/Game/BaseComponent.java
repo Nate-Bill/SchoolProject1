@@ -72,6 +72,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
                 int speed = 4;
                 double deltaY = speed * Math.sin(Math.toRadians(90 - me.rotation));
                 double deltaX = speed * Math.cos(Math.toRadians(90 - me.rotation));
+                GameController.singleton.isFiring = true;
                 for (int i = 1; i <= GameController.singleton.ballCount; i++) {
                     try {
                         new GameObject("ball", (int) me.X, (int) me.Y + 42, 10, "/schoolgame/resources/ball2.png", true, new BallComponent()).AddMotion(new MotionComponent(deltaX, -deltaY, 3000));
@@ -80,6 +81,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
 
                     }
                 }
+                GameController.singleton.isFiring = false;
                 me.visible = false;
             }).start();
         } else if (ke.getKeyCode() == 61) {
