@@ -79,19 +79,6 @@ public class GameController {
             GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(box -> {
                 box.AddMotion(new MotionComponent(0, 5, 17));
             });
-            if (GameEngine.singleton.GetGameObjectsByName("box").stream().anyMatch(go -> go.Y > 600)) {
-                GameEngine.singleton.GetGameObjectsByName("box").forEach(GameObject::Destroy);
-                GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(GameObject::Destroy);
-                tutorial = new TextObject("tutorial", 220, 400, 1000, "Game Over! Press space to try again. Score: " + round);
-                round = 0;
-                ballCount = 1;
-                return;
-            }
-            GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(go -> {
-                if (go.Y > 600) {
-                    go.Destroy();
-                }
-            });
             int ballBoxes = 0;
             int boxes = 0;
             for (int x = 10; x < 720; x += 85) {
@@ -101,7 +88,7 @@ public class GameController {
                         box.AddMotion(new MotionComponent(0, 5, 17));
                         ballBoxes++;
                     }
-                } else if (RNG(0, 100) < Math.min(Math.ceil(round * 3), 70)) {
+                } else if (RNG(0, 100) < Math.min(Math.ceil(round * 2), 45)) {
                     GameObject box = new GameObject("box", x + 40, -45, 10, "/schoolgame/resources/box2.png", true, new BoxComponent(Math.max(round + RNG(-2, 2), 1)));
                     box.AddMotion(new MotionComponent(0, 5, 17));
                     boxes++;
@@ -116,10 +103,27 @@ public class GameController {
                     forceSpawnTried++;
                 }
                 if (forceSpawnTried < 9) {
-                    GameObject box = new GameObject("box", x + 40, -40, 10, "/schoolgame/resources/box2.png", true, new BoxComponent(Math.max(round + RNG(-2, 2), 1)));
-                    box.AddMotion(new MotionComponent(0, 5, 16));
+                    GameObject box = new GameObject("box", x + 40, -45, 10, "/schoolgame/resources/box2.png", true, new BoxComponent(Math.max(round + RNG(-2, 2), 1)));
+                    box.AddMotion(new MotionComponent(0, 5, 17));
                 }
             }
+            if (GameEngine.singleton.GetGameObjectsByName("ballBox").size() > 0 || GameEngine.singleton.GetGameObjectsByName("box").size() > 0) {
+                GameEngine.singleton.BlockForFrames(17);
+            }
+            if (GameEngine.singleton.GetGameObjectsByName("box").stream().anyMatch(go -> go.Y > 685)) {
+                GameEngine.singleton.BlockForFrames(20);
+                GameEngine.singleton.GetGameObjectsByName("box").forEach(GameObject::Destroy);
+                GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(GameObject::Destroy);
+                tutorial = new TextObject("tutorial", 220, 400, 1000, "Game Over! Press space to try again. Score: " + round);
+                round = 0;
+                ballCount = 1;
+                return;
+            }
+            GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(go -> {
+                if (go.Y > 685) {
+                    go.Destroy();
+                }
+            });
         }).start();
     }
 
