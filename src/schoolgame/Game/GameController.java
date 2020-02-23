@@ -15,6 +15,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 /**
  * @author 14cfirth
@@ -30,6 +32,7 @@ public class GameController {
     public TextObject scoreCounter;
     public TextObject ballCounter;
     public boolean isFiring = false;
+    public boolean isMoving = false;
     private int BaseX = 400;
 
     public GameController() {
@@ -60,13 +63,18 @@ public class GameController {
         ballCounter = new TextObject("balls", 0, 65, 1000, "Balls: 1", new BallCounterComponent());
         new Thread(() -> { //Controls if can fire
             while (!GameEngine.singleton.cancellationToken) {
-                canFire = !(GameEngine.singleton.GetGameObjectsByComponent(BallComponent.class).size() > 0);
-                base.visible = canFire;
+                boolean localCanFire = false; //Prevents desync between expected and actual
+                localCanFire = !(GameEngine.singleton.GetGameObjectsByComponent(BallComponent.class).size() > 0);
+                boolean noLowerThan680 = GameEngine.singleton.GetGameObjectsByName("box").stream().noneMatch(go -> go.Y > 685);
+                localCanFire = localCanFire && noLowerThan680;
+                localCanFire = localCanFire && !isMoving;
+                canFire = localCanFire;
+                base.visible = canFire || isMoving || !noLowerThan680;
                 if (!canFire && tutorial != null) {
                     tutorial.Destroy();
                     tutorial = null;
                 }
-                canFire = canFire && GameEngine.singleton.GetGameObjectsByName("box").stream().noneMatch(go -> go.Y > 685);
+
             }
         }).start();
     }
@@ -76,8 +84,14 @@ public class GameController {
     }
 
     public void NextRound() {
-        round++;
-        MoveBase(true);
+        CompletableFuture.supplyAsync((Supplier<Void>) () -> {
+            round++;
+            MoveBase(true);
+            isMoving = true;
+            GameEngine.singleton.BlockForFrames(17);
+            isMoving = false;
+            return null;
+        });
         new Thread(() -> {
             GameEngine.singleton.GetGameObjectsByName("box").forEach(box -> {
                 box.AddMotion(new MotionComponent(0, 5, 17));
