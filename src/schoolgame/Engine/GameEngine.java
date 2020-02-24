@@ -46,11 +46,16 @@ public class GameEngine implements KeyListener {
         jframe.setResizable(false);
         jframe.setVisible(true);
         new Thread(() -> {
+            long adjustedSleep = 10;
             while (!GameEngine.singleton.cancellationToken) {
                 try {
-                    long timeMilis = System.currentTimeMillis();
-                    GameEngine.singleton.renderer.repaint();
-                    Thread.sleep(10);
+                    final long timeMilis = System.currentTimeMillis();
+                    GameEngine.singleton.renderer.repaint();                
+                    final long sleeptimeMilis = System.currentTimeMillis();
+                    Thread.sleep(adjustedSleep);
+                    long lastSleepTime = (int) (System.currentTimeMillis() - timeMilis);
+                    long discrepencyFrameTime = lastSleepTime - 10;
+                    adjustedSleep = Math.max(0, adjustedSleep - discrepencyFrameTime);
                     lastFrameTime = (int) (System.currentTimeMillis() - timeMilis);
                     frames++;
                     frameUpdates.forEach((k,v) -> {
