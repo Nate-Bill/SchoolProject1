@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import schoolgame.Engine.SoundEngine;
 
 /**
  * @author 14cfirth
@@ -160,6 +161,7 @@ public class GameController {
                 tutorial = new TextObject("tutorial", 220, 400, 1000, "Game Over! Press space to try again. Score: " + round);
                 round = 0;
                 ballCount = 1;
+                new SoundEngine().Play("/schoolgame/resources/GameOver.wav");
                 return;
             }
             GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(go -> {

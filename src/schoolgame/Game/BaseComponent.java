@@ -9,6 +9,7 @@ import schoolgame.Engine.GameEngine;
 import schoolgame.Models.*;
 
 import java.awt.event.KeyEvent;
+import schoolgame.Engine.SoundEngine;
 
 /**
  *
@@ -69,14 +70,15 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
         } else if (ke.getKeyCode() == 38 || ke.getKeyCode() == 32) { //Up or space
             if (!GameController.singleton.canFire) return;
             new Thread (() -> {
-                int speed = 4;
+                int speed = 6;
                 double deltaY = speed * Math.sin(Math.toRadians(90 - me.rotation));
                 double deltaX = speed * Math.cos(Math.toRadians(90 - me.rotation));
                 GameController.singleton.isFiring = true;
                 for (int i = 1; i <= GameController.singleton.ballCount; i++) {
                     try {
                         new GameObject("ball", (int) me.X, (int) me.Y + 42, 10, "/schoolgame/resources/ball2.png", true, new BallComponent()).AddMotion(new MotionComponent(deltaX, -deltaY, 3000));
-                        Thread.sleep(100);
+                        new SoundEngine().Play("/schoolgame/resources/LauncherSound.wav");
+                        Thread.sleep(50);
                     } catch (Exception ignored) {
 
                     }

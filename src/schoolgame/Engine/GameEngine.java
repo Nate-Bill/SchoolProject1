@@ -52,6 +52,8 @@ public class GameEngine implements KeyListener {
                     final long timeMilis = System.currentTimeMillis();
                     GameEngine.singleton.renderer.repaint();                
                     final long sleeptimeMilis = System.currentTimeMillis();
+                    if (adjustedSleep > 10) adjustedSleep = 10;
+                    if (adjustedSleep < 5) adjustedSleep = 5;
                     Thread.sleep(adjustedSleep);
                     long lastSleepTime = (int) (System.currentTimeMillis() - timeMilis);
                     long discrepencyFrameTime = lastSleepTime - 10;
