@@ -5,14 +5,8 @@
  */
 package schoolgame.Engine;
 
-//import java.io.FileInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.InputStream;
-//import sun.audio.AudioPlayer;
-//import sun.audio.AudioStream;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+import javax.sound.sampled.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -23,12 +17,21 @@ public class SoundEngine {
     public void Play(String URI) {
         new Thread(() -> {
             try {
+                Thread.currentThread().setName("AudioPlayer");
                 Clip clip = AudioSystem.getClip();
                 clip.open(AudioSystem.getAudioInputStream(this.getClass().getResource(URI)));
                 clip.start();
-                //InputStream in = new FileInputStream(this.getClass().getResource(URI).getFile());
-                //AudioStream audioStream = new AudioStream(in);
-                //AudioPlayer.player.start(audioStream);
+                clip.addLineListener(myLineEvent -> {
+                    if (myLineEvent.getType() == LineEvent.Type.STOP)
+                        new Thread(() -> {
+                            try {
+                                Thread.sleep(1000);
+                                clip.close();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }).start();
+                });
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

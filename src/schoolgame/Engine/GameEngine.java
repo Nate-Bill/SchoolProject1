@@ -48,6 +48,7 @@ public class GameEngine implements KeyListener {
         jframe.setResizable(false);
         jframe.setVisible(true);
         new Thread(() -> { //Render
+            Thread.currentThread().setName("RenderThread");
             while (!GameEngine.singleton.cancellationToken) {
                 try {
                     final long timeMilis = System.currentTimeMillis();
@@ -63,6 +64,7 @@ public class GameEngine implements KeyListener {
             }
         }).start();
         new Thread(() -> { //Tick
+            Thread.currentThread().setName("TickThread");
             short sleepTime = 10;
             while (!GameEngine.singleton.cancellationToken) {
                 try {

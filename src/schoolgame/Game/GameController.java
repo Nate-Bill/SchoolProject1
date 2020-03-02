@@ -79,6 +79,7 @@ public class GameController {
             return null;
         });
         new Thread(() -> {
+            Thread.currentThread().setName("NextRoundThread");
             GameEngine.singleton.GetGameObjectsByName("box").forEach(box -> {
                 box.AddMotion(new MotionComponent(0, 5, 17));
             });
