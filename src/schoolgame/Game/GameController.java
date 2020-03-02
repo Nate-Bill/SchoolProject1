@@ -62,22 +62,6 @@ public class GameController {
         tutorial = new TextObject("tutorial", 220, 400, 1000, "Left and right arrow to rotate, space to fire");
         scoreCounter = new TextObject("score", 0, 45, 1000, "Score: 0", new ScoreCounterComponent());
         ballCounter = new TextObject("balls", 0, 65, 1000, "Balls: 1", new BallCounterComponent());
-        new Thread(() -> { //Controls if can fire
-            while (!GameEngine.singleton.cancellationToken) {
-                boolean localCanFire = false; //Prevents desync between expected and actual
-                localCanFire = !(GameEngine.singleton.GetGameObjectsByComponent(BallComponent.class).size() > 0);
-                boolean noLowerThan680 = GameEngine.singleton.GetGameObjectsByName("box").stream().noneMatch(go -> go.Y > 685);
-                localCanFire = localCanFire && noLowerThan680;
-                localCanFire = localCanFire && !isMoving;
-                canFire = localCanFire;
-                base.visible = canFire || isMoving || !noLowerThan680;
-                if (!canFire && tutorial != null) {
-                    tutorial.Destroy();
-                    tutorial = null;
-                }
-
-            }
-        }).start();
     }
 
     public void CheckNextRound() {
@@ -85,11 +69,12 @@ public class GameController {
     }
 
     public void NextRound() {
+        round++;
+        if (round % 5 == 0) ballCount++;
         CompletableFuture.supplyAsync((Supplier<Void>) () -> {
-            round++;
             MoveBase(true);
             isMoving = true;
-            GameEngine.singleton.BlockForFrames(17);
+            GameEngine.singleton.BlockForTicks(17);
             isMoving = false;
             return null;
         });
@@ -129,7 +114,7 @@ public class GameController {
                 }
             }
             if (GameEngine.singleton.GetGameObjectsByName("ballBox").size() > 0 || GameEngine.singleton.GetGameObjectsByName("box").size() > 0) {
-                GameEngine.singleton.BlockForFrames(17);
+                GameEngine.singleton.BlockForTicks(17);
             }
             if (GameEngine.singleton.GetGameObjectsByName("box").stream().anyMatch(go -> go.Y > 685)) {
                 GameEngine.singleton.GetGameObjectsByName("box").stream().filter(go -> go.Y > 685).forEach(go -> GameEngine.singleton.GetComponentFromGameObject(go, BoxComponent.class).forEach(igo -> {
@@ -139,29 +124,13 @@ public class GameController {
                         box.ChangeColourOverride(go, Color.RED);
                     }
                 }));
-                GameEngine.singleton.BlockForFrames(50);
-                GameEngine.singleton.GetGameObjectsByName("box").stream().filter(go -> go.Y > 685).forEach(go -> GameEngine.singleton.GetComponentFromGameObject(go, BoxComponent.class).forEach(igo -> {
-                    if (igo instanceof  BoxComponent) {
-                        BoxComponent box = (BoxComponent) igo;
-                        box.DontChangeColour = true;
-                        box.ChangeColourOverride(go, Color.DARK_GRAY);
-                    }
-                }));
-                GameEngine.singleton.BlockForFrames(50);
-                GameEngine.singleton.GetGameObjectsByName("box").stream().filter(go -> go.Y > 685).forEach(go -> GameEngine.singleton.GetComponentFromGameObject(go, BoxComponent.class).forEach(igo -> {
-                    if (igo instanceof  BoxComponent) {
-                        BoxComponent box = (BoxComponent) igo;
-                        box.DontChangeColour = true;
-                        box.ChangeColourOverride(go, Color.RED);
-                    }
-                }));
-                GameEngine.singleton.BlockForFrames(50);
+                new SoundEngine().Play("/schoolgame/resources/GameOverSound.wav");
+                GameEngine.singleton.BlockForTicks(100);
                 GameEngine.singleton.GetGameObjectsByName("box").forEach(GameObject::Destroy);
                 GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(GameObject::Destroy);
                 tutorial = new TextObject("tutorial", 220, 400, 1000, "Game Over! Press space to try again. Score: " + round);
                 round = 0;
                 ballCount = 1;
-                new SoundEngine().Play("/schoolgame/resources/GameOver.wav");
                 return;
             }
             GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(go -> {

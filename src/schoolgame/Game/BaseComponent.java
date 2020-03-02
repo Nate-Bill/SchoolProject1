@@ -31,6 +31,17 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
         } else {
             counter.visible = false;
         }
+        boolean localCanFire = false; //Prevents desync between expected and actual
+        localCanFire = !(GameEngine.singleton.GetGameObjectsByComponent(BallComponent.class).size() > 0);
+        boolean noLowerThan680 = GameEngine.singleton.GetGameObjectsByName("box").stream().noneMatch(go -> go.Y > 685);
+        localCanFire = localCanFire && noLowerThan680;
+        localCanFire = localCanFire && !GameController.singleton.isMoving;
+        GameController.singleton.canFire = localCanFire;
+        gameObject.visible = GameController.singleton.canFire || GameController.singleton.isMoving || !noLowerThan680;
+        if (!GameController.singleton.canFire && GameController.singleton.tutorial != null) {
+            GameController.singleton.tutorial.Destroy();
+            GameController.singleton.tutorial = null;
+        }
     }
 
     @Override
@@ -78,7 +89,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
                     try {
                         new GameObject("ball", (int) me.X, (int) me.Y + 42, 10, "/schoolgame/resources/ball2.png", true, new BallComponent()).AddMotion(new MotionComponent(deltaX, -deltaY, 3000));
                         new SoundEngine().Play("/schoolgame/resources/LauncherSound.wav");
-                        Thread.sleep(50);
+                        GameEngine.singleton.BlockForTicks(5);
                     } catch (Exception ignored) {
 
                     }

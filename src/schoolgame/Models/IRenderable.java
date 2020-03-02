@@ -6,4 +6,6 @@ public interface IRenderable {
     void DoRender(Graphics g);
 
     int GetZ();
+
+    void Tick();
 }

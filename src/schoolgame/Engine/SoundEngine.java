@@ -5,11 +5,14 @@
  */
 package schoolgame.Engine;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
+//import java.io.FileInputStream;
+//import java.io.FileNotFoundException;
+//import java.io.InputStream;
+//import sun.audio.AudioPlayer;
+//import sun.audio.AudioStream;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 /**
  *
@@ -20,9 +23,12 @@ public class SoundEngine {
     public void Play(String URI) {
         new Thread(() -> {
             try {
-                InputStream in = new FileInputStream(this.getClass().getResource(URI).getFile());
-                AudioStream audioStream = new AudioStream(in);
-                AudioPlayer.player.start(audioStream);
+                Clip clip = AudioSystem.getClip();
+                clip.open(AudioSystem.getAudioInputStream(this.getClass().getResource(URI)));
+                clip.start();
+                //InputStream in = new FileInputStream(this.getClass().getResource(URI).getFile());
+                //AudioStream audioStream = new AudioStream(in);
+                //AudioPlayer.player.start(audioStream);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
