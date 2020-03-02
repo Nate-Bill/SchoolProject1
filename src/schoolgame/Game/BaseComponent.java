@@ -9,7 +9,11 @@ import schoolgame.Engine.GameEngine;
 import schoolgame.Models.*;
 
 import java.awt.event.KeyEvent;
+import java.util.List;
+
 import schoolgame.Engine.SoundEngine;
+
+import static schoolgame.Engine.GameEngine.singleton;
 
 /**
  *
@@ -32,8 +36,8 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
             counter.visible = false;
         }
         boolean localCanFire = false; //Prevents desync between expected and actual
-        localCanFire = !(GameEngine.singleton.GetGameObjectsByComponent(BallComponent.class).size() > 0);
-        boolean noLowerThan680 = GameEngine.singleton.GetGameObjectsByName("box").stream().noneMatch(go -> go.Y > 685);
+        localCanFire = !(singleton.GetGameObjectsByComponent(BallComponent.class).size() > 0);
+        boolean noLowerThan680 = singleton.GetGameObjectsByName("box").stream().noneMatch(go -> go.Y > 685);
         localCanFire = localCanFire && noLowerThan680;
         localCanFire = localCanFire && !GameController.singleton.isMoving;
         GameController.singleton.canFire = localCanFire;
@@ -47,14 +51,14 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
     @Override
     public void Start(GameObject gameObject) {
         this.me = gameObject;
-        GameEngine.singleton.RegisterKeyListener(this);
+        singleton.RegisterKeyListener(this);
         me.yRotationOffset = 42;
         counter = new TextObject("ballCountBase", 0, 0, 0, "x1");
     }
 
     @Override
     public void Destroy(GameObject gameObject) {
-        GameEngine.singleton.UnregisterKeyListener(this);
+        singleton.UnregisterKeyListener(this);
     }
 
     @Override
@@ -89,13 +93,26 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
                     try {
                         new GameObject("ball", (int) me.X, (int) me.Y + 42, 10, "/schoolgame/resources/ball2.png", true, new BallComponent()).AddMotion(new MotionComponent(deltaX, -deltaY, 3000));
                         new SoundEngine().Play("/schoolgame/resources/LauncherSound.wav");
-                        GameEngine.singleton.BlockForTicks(5);
+                        singleton.BlockForTicks(5);
                     } catch (Exception ignored) {
 
                     }
                 }
                 GameController.singleton.isFiring = false;
                 me.visible = false;
+                int roundWaitStarted = GameController.singleton.round;
+                singleton.BlockForTicks(500);
+                if (roundWaitStarted == GameController.singleton.round && singleton.GetGameObjectsByComponent(BallComponent.class).size() > 0) {
+                    List<GameObject> balls = singleton.GetGameObjectsByComponent(BallComponent.class);
+                    balls.forEach(go -> {
+                        List<IGameObjectComponent> ballComp = GameEngine.singleton.GetComponentFromGameObject(go, BallComponent.class);
+                        ballComp.forEach(bc -> {
+                            if (bc instanceof BallComponent) {
+                                ((BallComponent)bc).Boost(go);
+                            }
+                        });
+                    });
+                }
             }).start();
         } else if (ke.getKeyCode() == 61) {
             GameController.singleton.ballCount += 5;

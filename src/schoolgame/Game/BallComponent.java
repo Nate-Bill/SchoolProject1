@@ -91,4 +91,10 @@ public class BallComponent implements IGameObjectComponent {
             GameController.singleton.ballCount++;
         }
     }
+    public void Boost(GameObject me) {
+        me.pendingVectors.forEach(mc -> {
+            if (Math.abs(mc.x) <= 6) mc.x = mc.x * 2;
+            if (Math.abs(mc.y) <= 6) mc.y = mc.y * 2;
+        });
+    }
 }
