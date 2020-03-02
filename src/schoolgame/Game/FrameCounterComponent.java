@@ -24,7 +24,8 @@ public class FrameCounterComponent implements ITextObjectComponent {
             int fps = GameEngine.singleton.lastFrameTime == 0 ? -1 : 1000 / GameEngine.singleton.lastFrameTime;
             int tps = GameEngine.singleton.lastTickTime == 0 ? -1 : 1000 / GameEngine.singleton.lastTickTime;
             textObject.text = "FPS: " + (fps == -1 ? ">1000" : fps) + " (" + GameEngine.singleton.lastFrameTime + "ms) (" + GameEngine.singleton.frames + " frames) " +
-                    "(" + (tps == -1 ? ">1000" : tps) + " TPS)" + " (" + GameEngine.singleton.lastTickTime + " ms)"+ " (" + GameEngine.singleton.ticks + " ticks)";
+                    (tps == -1 ? ">1000" : tps) + " TPS" + " (" + GameEngine.singleton.lastTickTime + " ms)"+ " (" + GameEngine.singleton.ticks + " ticks) " +
+                    Thread.activeCount() + " threads";
         } catch (Exception ex) {
             System.out.println("Exception in frame counter!");
             ex.printStackTrace();

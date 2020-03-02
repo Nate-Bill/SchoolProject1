@@ -82,6 +82,7 @@ public class GameEngine implements KeyListener {
                     if (sleepTime < 6) sleepTime = 6;
                     if (sleepTime > 12) sleepTime = 12;
                     if (ticks > (Long.MAX_VALUE - 10000)) ticks = 0;
+                    if (ticks % 3000 == 0) System.gc();
                 } catch (Exception ex) {
                     System.out.println("Exception in tick!");
                     ex.printStackTrace();
