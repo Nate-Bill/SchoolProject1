@@ -75,6 +75,11 @@ public class GameEngine implements KeyListener {
                             tickUpdates.replace(k, true);
                         }
                     });
+                    tickUpdates.forEach((k,v) -> {
+                        if (k <= ticks - 10) {
+                            tickUpdates.remove(k);
+                        }
+                    });
                     Thread.sleep(sleepTime);
                     ticks++;
                     lastTickTime = (int) (System.currentTimeMillis() - timeMilis);
@@ -190,6 +195,5 @@ public class GameEngine implements KeyListener {
         tickUpdates.put(target, false);
         while (!tickUpdates.get(target)) { //Do nothing until frame target reached
         }
-        tickUpdates.remove(target);
     }
 }
