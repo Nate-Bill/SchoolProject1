@@ -30,7 +30,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
         if (me.visible) {
             counter.visible = true;
             counter.text = "x" + GameController.singleton.ballCount;
-            counter.X = me.X - 35;
+            counter.X = me.X < 400 ? me.X + 20 : me.X - 35;
             counter.Y = me.Y + 65;
         } else {
             counter.visible = false;

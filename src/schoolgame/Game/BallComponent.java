@@ -83,7 +83,7 @@ public class BallComponent implements IGameObjectComponent {
             List<IGameObjectComponent> boxComponents = GameEngine.singleton.GetComponentFromGameObject(gameObjectCollidedWith, BoxComponent.class);
             if (boxComponents.size() > 0) {
                 BoxComponent box = (BoxComponent) boxComponents.get(0);
-                box.strength--;
+                box.setStrength(box.getStreangth() - 1);
             }
         } else if (gameObjectCollidedWith.name.equals("ballBox")) {
             new SoundEngine().Play("/schoolgame/resources/BallBlockSound.wav");
