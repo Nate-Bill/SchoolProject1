@@ -14,6 +14,7 @@ import schoolgame.Models.MotionComponent;
 import java.util.List;
 
 import static schoolgame.Engine.GameEngine.singleton;
+import schoolgame.Engine.SoundEngine;
 
 /**
  * @author 14CFirth
@@ -37,6 +38,7 @@ public class BallComponent implements IGameObjectComponent {
 
     @Override
     public void WallCollideEvent(GameObject gameObject, CollisionEventType type) {
+        new SoundEngine().Play("/schoolgame/resources/WallHit.wav");
         MotionComponent dmc = gameObject.pendingVectors.stream().findFirst().get();
         double Xc = dmc.x;
         double Yc = dmc.y;
@@ -61,6 +63,7 @@ public class BallComponent implements IGameObjectComponent {
     @Override
     public void GameObjectCollideEvent(GameObject gameObject, GameObject gameObjectCollidedWith, CollisionEventType type) {
         if (gameObjectCollidedWith.name.equals("box")) {
+            new SoundEngine().Play("/schoolgame/resources/HitSound.wav");
             MotionComponent dmc = gameObject.pendingVectors.stream().findFirst().get();
             double Xc = dmc.x;
             double Yc = dmc.y;
@@ -83,8 +86,15 @@ public class BallComponent implements IGameObjectComponent {
                 box.strength--;
             }
         } else if (gameObjectCollidedWith.name.equals("ballBox")) {
+            new SoundEngine().Play("/schoolgame/resources/BallBlockSound.wav");
             gameObjectCollidedWith.Destroy();
             GameController.singleton.ballCount++;
         }
+    }
+    public void Boost(GameObject me) {
+        me.pendingVectors.forEach(mc -> {
+            if (Math.abs(mc.x) <= 6) mc.x = mc.x * 2;
+            if (Math.abs(mc.y) <= 6) mc.y = mc.y * 2;
+        });
     }
 }

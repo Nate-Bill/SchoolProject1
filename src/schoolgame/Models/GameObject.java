@@ -61,6 +61,18 @@ public class GameObject implements IRenderable {
 
     @Override
     public void DoRender(Graphics g) {
+        AffineTransform at = AffineTransform.getTranslateInstance(X - (sprite.getWidth(null) / 2f), Y - (sprite.getHeight(null) / 2f));
+        at.rotate(Math.toRadians(rotation), (sprite.getWidth(null) / 2f) + xRotationOffset, (sprite.getHeight(null) / 2f + yRotationOffset));
+        if (visible) ((Graphics2D) g).drawImage(sprite, at, null);
+    }
+
+    @Override
+    public int GetZ() {
+        return Z;
+    }
+
+    @Override
+    public void Tick() {
         ArrayList<MotionComponent> toDelete = new ArrayList<>();
         for (MotionComponent mc : pendingVectors) {
             if (mc.frames <= 0) {
@@ -120,14 +132,6 @@ public class GameObject implements IRenderable {
                 ex.printStackTrace();
             }
         }
-        AffineTransform at = AffineTransform.getTranslateInstance(X - (sprite.getWidth(null) / 2f), Y - (sprite.getHeight(null) / 2f));
-        at.rotate(Math.toRadians(rotation), (sprite.getWidth(null) / 2f) + xRotationOffset, (sprite.getHeight(null) / 2f + yRotationOffset));
-        if (visible) ((Graphics2D) g).drawImage(sprite, at, null);
-    }
-
-    @Override
-    public int GetZ() {
-        return Z;
     }
 
     private void DebugDraw(Graphics g, Rectangle r) {

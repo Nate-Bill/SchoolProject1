@@ -29,10 +29,12 @@ public class GameEngine implements KeyListener {
     public final Queue<IRenderable> activeObjects = new ConcurrentLinkedQueue<>();
     public Boolean cancellationToken = false;
     public int lastFrameTime;
+    public int lastTickTime;
     public long frames;
+    public long ticks;
     Queue<IKeyCallback> keys = new ConcurrentLinkedQueue<>();
     private RenderEngine renderer;
-    private ConcurrentHashMap<Long, Boolean> frameUpdates = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, Boolean> tickUpdates = new ConcurrentHashMap<>();
 
     public GameEngine() {
         singleton = this;
@@ -45,27 +47,50 @@ public class GameEngine implements KeyListener {
         jframe.addKeyListener(this);
         jframe.setResizable(false);
         jframe.setVisible(true);
-        new Thread(() -> {
-            long adjustedSleep = 10;
+        new Thread(() -> { //Render
+            Thread.currentThread().setName("RenderThread");
             while (!GameEngine.singleton.cancellationToken) {
                 try {
                     final long timeMilis = System.currentTimeMillis();
-                    GameEngine.singleton.renderer.repaint();                
-                    final long sleeptimeMilis = System.currentTimeMillis();
-                    Thread.sleep(adjustedSleep);
-                    long lastSleepTime = (int) (System.currentTimeMillis() - timeMilis);
-                    long discrepencyFrameTime = lastSleepTime - 10;
-                    adjustedSleep = Math.max(0, adjustedSleep - discrepencyFrameTime);
+                    GameEngine.singleton.renderer.repaint();
                     lastFrameTime = (int) (System.currentTimeMillis() - timeMilis);
                     frames++;
-                    frameUpdates.forEach((k,v) -> {
-                        if (k <= frames) {
-                            frameUpdates.replace(k, true);
+                    if (frames > (Long.MAX_VALUE - 10000)) frames = 0;
+                    Thread.sleep(1);
+                } catch (Exception ex) {
+                    System.out.println("Exception in render!");
+                    ex.printStackTrace();
+                }
+            }
+        }).start();
+        new Thread(() -> { //Tick
+            Thread.currentThread().setName("TickThread");
+            short sleepTime = 10;
+            while (!GameEngine.singleton.cancellationToken) {
+                try {
+                    final long timeMilis = System.currentTimeMillis();
+                    activeObjects.parallelStream().forEach(IRenderable::Tick);
+                    tickUpdates.forEach((k,v) -> {
+                        if (k <= ticks) {
+                            tickUpdates.replace(k, true);
                         }
                     });
-                    if (frames > (Long.MAX_VALUE - 100)) frames = 0;
-                } catch (Exception ignored) {
-
+                    tickUpdates.forEach((k,v) -> {
+                        if (k <= ticks - 10) {
+                            tickUpdates.remove(k);
+                        }
+                    });
+                    Thread.sleep(sleepTime);
+                    ticks++;
+                    lastTickTime = (int) (System.currentTimeMillis() - timeMilis);
+                    sleepTime += 10 - lastTickTime;
+                    if (sleepTime < 6) sleepTime = 6;
+                    if (sleepTime > 12) sleepTime = 12;
+                    if (ticks > (Long.MAX_VALUE - 10000)) ticks = 0;
+                    if (ticks % 3000 == 0) System.gc();
+                } catch (Exception ex) {
+                    System.out.println("Exception in tick!");
+                    ex.printStackTrace();
                 }
             }
         }).start();
@@ -111,14 +136,14 @@ public class GameEngine implements KeyListener {
         if (iRenderableList.get(0).GetZ() > iRenderableList.get(iRenderableList.size() - 1).GetZ()) {
             Collections.reverse(iRenderableList);
         }
-        for (IRenderable renderable : iRenderableList) {
+        iRenderableList.forEach(renderable -> { //Doing a parallel stream cause weird glitches so keep sync
             try {
                 renderable.DoRender(g);
             } catch (Exception ex) {
                 System.out.println("An error occurred while rendering an IRenderable: " + ex.getMessage());
                 ex.printStackTrace();
             }
-        }
+        });
     }
 
     public void RegisterKeyListener(IKeyCallback kl) {
@@ -165,10 +190,10 @@ public class GameEngine implements KeyListener {
         }
     }
 
-    public void BlockForFrames(int framesToWait) {
-        long frameTarget = this.frames + framesToWait;
-        frameUpdates.put(frameTarget, false);
-        while (!frameUpdates.get(frameTarget)) { //Do nothing until frame target reached
+    public void BlockForTicks(int ticksToWait) {
+        long target = this.ticks + ticksToWait;
+        tickUpdates.put(target, false);
+        while (!tickUpdates.get(target)) { //Do nothing until frame target reached
         }
     }
 }

@@ -55,6 +55,18 @@ public class TextObject implements IRenderable {
 
     @Override
     public void DoRender(Graphics g) {
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+        if (visible) g.drawString(text, (int) Math.round(X), (int) Math.round(Y));
+    }
+
+    @Override
+    public int GetZ() {
+        return Z;
+    }
+
+    @Override
+    public void Tick() {
         ArrayList<MotionComponent> toDelete = new ArrayList<>();
         for (MotionComponent mc : pendingVectors) {
             if (mc.frames <= 0) {
@@ -67,13 +79,5 @@ public class TextObject implements IRenderable {
         }
         pendingVectors.removeAll(toDelete);
         components.forEach(goc -> goc.Update(this));
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("TimesRoman", Font.PLAIN, 18));
-        if (visible) g.drawString(text, (int) Math.round(X), (int) Math.round(Y));
-    }
-
-    @Override
-    public int GetZ() {
-        return Z;
     }
 }
