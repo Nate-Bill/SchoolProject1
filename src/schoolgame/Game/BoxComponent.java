@@ -8,6 +8,7 @@ import schoolgame.Models.TextObject;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import schoolgame.Engine.GameEngine;
+import schoolgame.Engine.SoundEngine;
 
 public class BoxComponent implements IGameObjectComponent {
     private int strength;
@@ -22,6 +23,7 @@ public class BoxComponent implements IGameObjectComponent {
     
     public void setStrength(int strength) {
         if (GameEngine.singleton.ticks == lastDamageTick) return;
+        new SoundEngine().Play("/schoolgame/resources/HitSound.wav");
         this.strength = strength;
         this.lastDamageTick = GameEngine.singleton.ticks;
     }

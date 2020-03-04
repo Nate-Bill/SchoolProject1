@@ -63,7 +63,6 @@ public class BallComponent implements IGameObjectComponent {
     @Override
     public void GameObjectCollideEvent(GameObject gameObject, GameObject gameObjectCollidedWith, CollisionEventType type) {
         if (gameObjectCollidedWith.name.equals("box")) {
-            new SoundEngine().Play("/schoolgame/resources/HitSound.wav");
             MotionComponent dmc = gameObject.pendingVectors.stream().findFirst().get();
             double Xc = dmc.x;
             double Yc = dmc.y;
