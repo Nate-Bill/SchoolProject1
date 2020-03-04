@@ -85,7 +85,7 @@ public class BallComponent implements IGameObjectComponent {
                 BoxComponent box = (BoxComponent) boxComponents.get(0);
                 box.setStrength(box.getStreangth() - 1);
             }
-        } else if (gameObjectCollidedWith.name.equals("ballBox")) {
+        } else if (gameObjectCollidedWith.name.equals("ballBox") && !gameObjectCollidedWith.isDestroyed()) {
             new SoundEngine().Play("/schoolgame/resources/BallBlockSound.wav");
             gameObjectCollidedWith.Destroy();
             GameController.singleton.ballCount++;
