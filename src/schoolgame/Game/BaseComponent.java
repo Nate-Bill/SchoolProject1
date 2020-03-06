@@ -83,7 +83,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
         } else if (ke.getKeyCode() == 39) { //Right
             me.rotation += 2;
         } else if (ke.getKeyCode() == 38 || ke.getKeyCode() == 32) { //Up or space
-            if (!GameController.singleton.canFire || Math.abs(me.rotation) > 80) return;
+            if (!GameController.singleton.canFire || Math.abs(me.rotation) > 89) return;
             new Thread (() -> {
                 Thread.currentThread().setName("BallLauncherThread");
                 int speed = 6;
