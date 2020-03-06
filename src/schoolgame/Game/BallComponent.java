@@ -63,7 +63,6 @@ public class BallComponent implements IGameObjectComponent {
     @Override
     public void GameObjectCollideEvent(GameObject gameObject, GameObject gameObjectCollidedWith, CollisionEventType type) {
         if (gameObjectCollidedWith.name.equals("box")) {
-            new SoundEngine().Play("/schoolgame/resources/HitSound.wav");
             MotionComponent dmc = gameObject.pendingVectors.stream().findFirst().get();
             double Xc = dmc.x;
             double Yc = dmc.y;
@@ -83,9 +82,9 @@ public class BallComponent implements IGameObjectComponent {
             List<IGameObjectComponent> boxComponents = GameEngine.singleton.GetComponentFromGameObject(gameObjectCollidedWith, BoxComponent.class);
             if (boxComponents.size() > 0) {
                 BoxComponent box = (BoxComponent) boxComponents.get(0);
-                box.strength--;
+                box.setStrength(box.getStreangth() - 1);
             }
-        } else if (gameObjectCollidedWith.name.equals("ballBox")) {
+        } else if (gameObjectCollidedWith.name.equals("ballBox") && !gameObjectCollidedWith.isDestroyed()) {
             new SoundEngine().Play("/schoolgame/resources/BallBlockSound.wav");
             gameObjectCollidedWith.Destroy();
             GameController.singleton.ballCount++;

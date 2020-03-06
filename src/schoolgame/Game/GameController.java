@@ -126,6 +126,8 @@ public class GameController {
                     }
                 }));
                 new SoundEngine().Play("/schoolgame/resources/GameOverSound.wav");
+                BaseX = 400;
+                MoveBase(true);
                 GameEngine.singleton.BlockForTicks(100);
                 GameEngine.singleton.GetGameObjectsByName("box").forEach(GameObject::Destroy);
                 GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(GameObject::Destroy);

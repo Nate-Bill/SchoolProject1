@@ -31,6 +31,7 @@ public class GameObject implements IRenderable {
     public int xRotationOffset = 0;
     public int yRotationOffset = 0;
     public boolean visible = true;
+    private boolean destroyed = false;
 
     public GameObject(String name, int x, int y, int z, String spritePath, Boolean collidable, IGameObjectComponent... components) {
         this.name = name;
@@ -43,11 +44,16 @@ public class GameObject implements IRenderable {
         GameEngine.singleton.activeObjects.add(this);
         this.components.forEach(goc -> goc.Start(this));
     }
+    
+    public boolean isDestroyed() {
+        return destroyed;
+    }
 
     public void Destroy() {
         GameEngine.singleton.activeObjects.remove(this);
         this.components.forEach(goc -> goc.Destroy(this));
         this.components.clear();
+        destroyed = true;
     }
 
     public void AddMotion(MotionComponent motionComponent) {

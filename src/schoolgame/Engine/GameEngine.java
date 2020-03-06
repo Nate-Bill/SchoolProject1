@@ -53,10 +53,10 @@ public class GameEngine implements KeyListener {
                 try {
                     final long timeMilis = System.currentTimeMillis();
                     GameEngine.singleton.renderer.repaint();
+                    Thread.sleep(2);
                     lastFrameTime = (int) (System.currentTimeMillis() - timeMilis);
                     frames++;
                     if (frames > (Long.MAX_VALUE - 10000)) frames = 0;
-                    Thread.sleep(1);
                 } catch (Exception ex) {
                     System.out.println("Exception in render!");
                     ex.printStackTrace();
@@ -84,8 +84,8 @@ public class GameEngine implements KeyListener {
                     ticks++;
                     lastTickTime = (int) (System.currentTimeMillis() - timeMilis);
                     sleepTime += 10 - lastTickTime;
-                    if (sleepTime < 6) sleepTime = 6;
-                    if (sleepTime > 12) sleepTime = 12;
+                    if (sleepTime < 2) sleepTime = 2;
+                    if (sleepTime > 10) sleepTime = 10;
                     if (ticks > (Long.MAX_VALUE - 10000)) ticks = 0;
                     if (ticks % 3000 == 0) System.gc();
                 } catch (Exception ex) {

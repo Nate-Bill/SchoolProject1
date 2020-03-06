@@ -30,7 +30,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
         if (me.visible) {
             counter.visible = true;
             counter.text = "x" + GameController.singleton.ballCount;
-            counter.X = me.X - 35;
+            counter.X = me.X < 400 ? me.X + 20 : me.X - 35;
             counter.Y = me.Y + 65;
         } else {
             counter.visible = false;
@@ -83,7 +83,7 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
         } else if (ke.getKeyCode() == 39) { //Right
             me.rotation += 2;
         } else if (ke.getKeyCode() == 38 || ke.getKeyCode() == 32) { //Up or space
-            if (!GameController.singleton.canFire) return;
+            if (!GameController.singleton.canFire || Math.abs(me.rotation) > 80) return;
             new Thread (() -> {
                 Thread.currentThread().setName("BallLauncherThread");
                 int speed = 6;
