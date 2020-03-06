@@ -12,11 +12,20 @@ import schoolgame.Models.MotionComponent;
 import schoolgame.Models.TextObject;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import schoolgame.Engine.SoundEngine;
 
 /**
@@ -131,7 +140,8 @@ public class GameController {
                 GameEngine.singleton.BlockForTicks(100);
                 GameEngine.singleton.GetGameObjectsByName("box").forEach(GameObject::Destroy);
                 GameEngine.singleton.GetGameObjectsByName("ballBox").forEach(GameObject::Destroy);
-                tutorial = new TextObject("tutorial", 220, 400, 1000, "Game Over! Press space to try again. Score: " + round);
+                if (getHighscore() < round) setHighscore(round);
+                tutorial = new TextObject("tutorial", 140, 400, 1000, "Game Over! Press space to try again. Score: " + round + " High Score: " + getHighscore());
                 round = 0;
                 ballCount = 1;
                 return;
@@ -151,5 +161,71 @@ public class GameController {
     private int RNG(int low, int high) {
         Random r = new Random();
         return r.nextInt(high-low) + low;
+    }
+    
+    private int getHighscore() {
+        try {
+            if (!new File("scores.dat").exists()) return 0;
+            BufferedReader br = new BufferedReader(new FileReader(new File("scores.dat")));
+            List<String> lines = br.lines().collect(Collectors.toList());
+            if (lines.stream().anyMatch(l -> l.startsWith("hs:"))) {
+                return Integer.parseInt(lines.stream().filter(l -> l.startsWith("hs:")).findFirst().get().substring(3));
+            } else {
+                return 0;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return 0;
+        }
+    }
+    private void setHighscore(int score) {
+        try {
+            List<String> lines;
+            if (new File("scores.dat").exists()) {
+                BufferedReader br = new BufferedReader(new FileReader(new File("scores.dat")));
+                lines = br.lines().collect(Collectors.toList());
+                lines.replaceAll(new HSUpdater(score));
+            } else {
+                lines = new ArrayList<String>() {
+                    {
+                        add("hs:" + score);
+                    }
+                };
+            }
+            File file = new File("scores.dat");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(file);
+            DataOutputStream dos = new DataOutputStream(fos);
+            dos.writeBytes(ListToString(lines));
+            dos.close();
+            fos.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private String ListToString(List<String> list) {
+        String listString = "";
+        for (String l : list) {
+            listString += (l + "\n");
+        }
+        return listString;
+    }
+    
+    class HSUpdater implements UnaryOperator<String> 
+    {
+        private int score;
+        
+        public HSUpdater(int score) {
+            this.score  = score;
+        }
+        
+        @Override
+        public String apply(String t) {
+            if (t.startsWith("hs:")) return "hs:" + score;
+            return t;
+        }
     }
 }
