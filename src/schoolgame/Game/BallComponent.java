@@ -38,7 +38,7 @@ public class BallComponent implements IGameObjectComponent {
 
     @Override
     public void WallCollideEvent(GameObject gameObject, CollisionEventType type) {
-        new SoundEngine().Play("/schoolgame/resources/WallHit.wav");
+        if(!(type == CollisionEventType.WALLBOTTOM)) new SoundEngine().Play("/schoolgame/resources/WallHit.wav");
         MotionComponent dmc = gameObject.pendingVectors.stream().findFirst().get();
         double Xc = dmc.x;
         double Yc = dmc.y;
