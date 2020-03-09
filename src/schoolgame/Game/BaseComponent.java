@@ -78,12 +78,12 @@ public class BaseComponent implements IGameObjectComponent, IKeyCallback {
 
     @Override
     public void KeyPress(KeyEvent ke) {
-        if (ke.getKeyCode() == 37) { //Left
+        if (ke.getKeyCode() == 37 && (Math.abs(me.rotation) <= 88 || me.rotation >= 80)) { //Left
             me.rotation -= 2;
-        } else if (ke.getKeyCode() == 39) { //Right
+        } else if (ke.getKeyCode() == 39 && (Math.abs(me.rotation) <= 88 || me.rotation <= -80)) { //Right
             me.rotation += 2;
         } else if (ke.getKeyCode() == 38 || ke.getKeyCode() == 32) { //Up or space
-            if (!GameController.singleton.canFire || Math.abs(me.rotation) > 80) return;
+            if (!GameController.singleton.canFire || Math.abs(me.rotation) > 89) return;
             new Thread (() -> {
                 Thread.currentThread().setName("BallLauncherThread");
                 int speed = 6;
