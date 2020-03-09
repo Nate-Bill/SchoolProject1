@@ -43,7 +43,7 @@ public class GameEngine implements KeyListener {
         jframe.add(renderer);
         jframe.setTitle("Balls VS Block");
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jframe.setSize(800, 800);
+        jframe.setSize(786, 800);
         jframe.addKeyListener(this);
         jframe.setResizable(false);
         jframe.setVisible(true);
