@@ -49,6 +49,7 @@ public class GameController {
         singleton = this;
         new GameEngine();
         new GameObject("bg", 400, 400, -100, "/schoolgame/resources/background.png", false);
+        new GameObject("base",400,735,-50, "/schoolgame/resources/base.png", false);
         new TextObject("fps", 0, 15, 100, "FPS: 0", new FrameCounterComponent());
         Start();
     }
