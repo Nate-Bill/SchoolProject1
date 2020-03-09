@@ -32,6 +32,12 @@ public class GameObject implements IRenderable {
     public int yRotationOffset = 0;
     public boolean visible = true;
     private boolean destroyed = false;
+    
+    public Rectangle myBox = new Rectangle();
+    public Rectangle myBottomBox = new Rectangle();
+    public Rectangle myTopBox = new Rectangle();
+    public Rectangle myLeftBox = new Rectangle();
+    public Rectangle myRightBox = new Rectangle();
 
     public GameObject(String name, int x, int y, int z, String spritePath, Boolean collidable, IGameObjectComponent... components) {
         this.name = name;
@@ -90,6 +96,13 @@ public class GameObject implements IRenderable {
             mc.frames--;
         }
         pendingVectors.removeAll(toDelete);
+        if (collidable) {
+            myBox = createRectangle(GetCorners((int) Math.round(X), (int) Math.round(Y), sprite.getWidth(null), sprite.getHeight(null)), 0);
+            myBottomBox = createRectangle(GetCorners((int) Math.round(X), (int) Math.round(Y), sprite.getWidth(null), sprite.getHeight(null)), 1);
+            myTopBox = createRectangle(GetCorners((int) Math.round(X), (int) Math.round(Y), sprite.getWidth(null), sprite.getHeight(null)), 2);
+            myLeftBox = createRectangle(GetCorners((int) Math.round(X), (int) Math.round(Y), sprite.getWidth(null), sprite.getHeight(null)), 3);
+            myRightBox = createRectangle(GetCorners((int) Math.round(X), (int) Math.round(Y), sprite.getWidth(null), sprite.getHeight(null)), 4);
+        }
         components.forEach(goc -> goc.Update(this));
         if (collidable && components.size() > 0) {
             try {
@@ -106,11 +119,6 @@ public class GameObject implements IRenderable {
                     if (ir instanceof GameObject) {
                         GameObject go = (GameObject) ir;
                         if (go.collidable && go != this) {
-                            Rectangle myBox = createRectangle(GetCorners((int) Math.round(X), (int) Math.round(Y), sprite.getWidth(null), sprite.getHeight(null)), 0);
-                            Rectangle goBottomBox = createRectangle(GetCorners((int) Math.round(go.X), (int) Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null)), 1);
-                            Rectangle goTopBox = createRectangle(GetCorners((int) Math.round(go.X), (int) Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null)), 2);
-                            Rectangle goLeftBox = createRectangle(GetCorners((int) Math.round(go.X), (int) Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null)), 3);
-                            Rectangle goRightBox = createRectangle(GetCorners((int) Math.round(go.X), (int) Math.round(go.Y), go.sprite.getWidth(null), go.sprite.getHeight(null)), 4);
                             /*
                             DebugDraw(g, myBox);
                             DebugDraw(g, goBottomBox);
@@ -118,16 +126,16 @@ public class GameObject implements IRenderable {
                             DebugDraw(g, goLeftBox);
                             DebugDraw(g, goRightBox);
                             */
-                            if (myBox.intersects(goLeftBox)) {
+                            if (myBox.intersects(go.myLeftBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECTLEFT));
                             }
-                            if (myBox.intersects(goRightBox)) {
+                            if (myBox.intersects(go.myRightBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECTRIGHT));
                             }
-                            if (myBox.intersects(goBottomBox)) {
+                            if (myBox.intersects(go.myBottomBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECTBOTTOM));
                             }
-                            if (myBox.intersects(goTopBox)) {
+                            if (myBox.intersects(go.myTopBox)) {
                                 components.forEach(goc -> goc.GameObjectCollideEvent(this, go, CollisionEventType.GAMEOBJECTTOP));
                             }
                         }
