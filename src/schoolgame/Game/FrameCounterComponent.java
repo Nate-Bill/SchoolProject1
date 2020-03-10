@@ -21,6 +21,7 @@ public class FrameCounterComponent implements ITextObjectComponent {
     @Override
     public void Update(TextObject textObject) {
         try {
+            if (GameEngine.singleton.ticks % 10 != 0) return;
             int fps = GameEngine.singleton.lastFrameTime == 0 ? -1 : 1000 / GameEngine.singleton.lastFrameTime;
             int tps = GameEngine.singleton.lastTickTime == 0 ? -1 : 1000 / GameEngine.singleton.lastTickTime;
             textObject.text = "FPS: " + (fps == -1 ? ">1000" : fps) + " (" + GameEngine.singleton.lastFrameTime + "ms) (" + GameEngine.singleton.frames + " frames) " +

@@ -14,6 +14,7 @@ public class BoxComponent implements IGameObjectComponent {
     private int strength;
     private long lastDamageTick = 0;
     public boolean DontChangeColour = false;
+    private GameObject me;
 
     private TextObject label;
 
@@ -26,6 +27,7 @@ public class BoxComponent implements IGameObjectComponent {
         new SoundEngine().Play("/schoolgame/resources/HitSound.wav");
         this.strength = strength;
         this.lastDamageTick = GameEngine.singleton.ticks;
+        me.sprite = ChangeColour(me.sprite);
     }
     
     public int getStreangth() {
@@ -43,12 +45,13 @@ public class BoxComponent implements IGameObjectComponent {
             label.Y = gameObject.Y + 6;
             label.text = String.valueOf(strength);
         }
-        if (!DontChangeColour) gameObject.sprite = ChangeColour(gameObject.sprite);
     }
 
     @Override
     public void Start(GameObject gameObject) {
         label = new TextObject("boxLabel", gameObject.X - 8, gameObject.Y - 6, 11, String.valueOf(strength));
+        me = gameObject;
+        me.sprite = ChangeColour(me.sprite);
     }
 
     @Override

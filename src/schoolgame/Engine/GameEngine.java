@@ -83,9 +83,9 @@ public class GameEngine implements KeyListener {
                     Thread.sleep(sleepTime);
                     ticks++;
                     lastTickTime = (int) (System.currentTimeMillis() - timeMilis);
-                    sleepTime += 10 - lastTickTime;
+                    sleepTime += (10 - lastTickTime) * 1.5;
                     if (sleepTime < 8) sleepTime = 8;
-                    if (sleepTime > 12) sleepTime = 12;
+                    if (sleepTime > 10) sleepTime = 10;
                     if (ticks > (Long.MAX_VALUE - 10000)) ticks = 0;
                     if (ticks % 3000 == 0) System.gc();
                 } catch (Exception ex) {
